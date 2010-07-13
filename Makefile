@@ -5,7 +5,6 @@ CPP_SRCS += \
 ./InputReader_copper.cpp \
 ./BayesianBioGeoAllDispersal.cpp \
 ./BayesianBioGeo.cpp \
-./BayesianBioGeoStMapper.cpp \
 ./BioGeoTree_copper.cpp \
 ./BioGeoTreeTools_copper.cpp \
 ./BranchSegment_copper.cpp \
@@ -25,7 +24,6 @@ OBJS += \
 ./InputReader_copper.o \
 ./BayesianBioGeoAllDispersal.o \
 ./BayesianBioGeo.o \
-./BayesianBioGeoStMapper.o \
 ./BioGeoTree_copper.o \
 ./BioGeoTreeTools_copper.o \
 ./BranchSegment_copper.o \
@@ -45,7 +43,6 @@ CPP_DEPS += \
 ./InputReader_copper.d \
 ./BayesianBioGeoAllDispersal.d \
 ./BayesianBioGeo.d \
-./BayesianBioGeoStMapper.d \
 ./BioGeoTree_copper.d \
 ./BioGeoTreeTools_copper.d \
 ./BranchSegment_copper.d \
@@ -88,7 +85,7 @@ LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread -lgmp -ldl -lu
 # if 64 bit GSL try CPPFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" ./configure
 # need to install gmp (with ./configure --enable-cxx) and mpfr and gmpfrxx
 #######
-BIG = yes 
+BIG = no 
 BIGTREE =
 ifeq  ($(strip $(BIG)),yes)
 	BIGTREE += -DBIGTREE
