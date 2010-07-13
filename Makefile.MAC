@@ -69,7 +69,7 @@ C_OPT = -O3 -ftree-vectorize -ffast-math -Wall -g
 
 #probably don't need unless messed with code
 #LIBS := -lgfortran -lbpp-popgen -lbpp-phyl -lbpp-seq -lbpp-numcalc -lbpp-utils -lgsl -lgslcblas -lm -lpthread
-BOOST_LIB = -I/Users/smitty/programming/LIBRARIES/boost_1_39_0
+#BOOST_LIB = -I/Users/smitty/programming/LIBRARIES/boost_1_39_0
 
 #for reading web input files
 PYTHON_LIB = -I/System/Library/Frameworks/Python.framework/Headers/

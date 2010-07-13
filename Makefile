@@ -74,7 +74,7 @@ PYTHON_REQ = -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
 
 #if using octave
 #INCLUDES = -I/usr/include/octave-3.0.5/octave/
-INCLUDES = -I/usr/include/octave-3.2.4/
+#INCLUDES = -I/usr/include/octave-3.2.4/
 
 # requires fortran, gsl, and pthread -- and -ldl -lutil -lpython2.6 are for python
 # if llapack lblas fail, try larmadillo
@@ -137,11 +137,11 @@ lagrange_cpp: $(OBJS) $(FORT_OBJS)
 	@echo 'Finished building target: $(TARGET_NAME)'
 	@echo ' '
 
-oct: $(OBJS) $(FORT_OBJS)
-	@echo 'Building target: $@'
-	mkoctfile --link-stand-alone $(LINK_LIB_DIRS) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
-	@echo 'Finished building target: $(TARGET_NAME)'
-	@echo ' '
+#oct: $(OBJS) $(FORT_OBJS)
+#	@echo 'Building target: $@'
+#	mkoctfile --link-stand-alone $(LINK_LIB_DIRS) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
+#	@echo 'Finished building target: $(TARGET_NAME)'
+#	@echo ' '
  
 
 # All Target

@@ -2,7 +2,7 @@
 \lyxformat 345
 \begin_document
 \begin_header
-\textclass book
+\textclass paper
 \begin_preamble
 \usepackage{fullpage}
 \end_preamble
@@ -46,7 +46,7 @@
 \begin_body
 
 \begin_layout Title
-Lagrange Manual
+Lagrange C++ Manual
 \end_layout
 
 \begin_layout Author
@@ -54,12 +54,12 @@ Stephen A.
  Smith
 \end_layout
 
-\begin_layout Chapter
+\begin_layout Part
 Introduction
 \end_layout
 
 \begin_layout Section
-Impetis
+Impetus
 \end_layout
 
 \begin_layout Standard
@@ -104,7 +104,7 @@ on process, 2) configuration file construction, 3) some examples and 4)
  
 \end_layout
 
-\begin_layout Chapter
+\begin_layout Part
 Compilation and Installation
 \end_layout
 
@@ -125,11 +125,11 @@ A more extensive discussion of the Makefile options is also below.
 \end_layout
 
 \begin_layout Standard
-The libraries used in Lagrange++ include:
+The libraries used in Lagrange include:
 \end_layout
 
 \begin_layout Itemize
-GNu Scientific Library (GSL) -- optimization
+Gnu Scientific Library (GSL) -- optimization
 \end_layout
 
 \begin_layout Itemize
@@ -149,7 +149,7 @@ gmpfrxx -- optional, for calculating exceptionally large trees
 \end_layout
 
 \begin_layout Standard
-You will also have to be able to compile with a fortran compiler (I have
+You will also have to be able to compile with a FORTRAN compiler (I have
  been using gfortran).
  
 \end_layout
@@ -264,7 +264,7 @@ make
 \begin_layout Enumerate
 make lagrange with the command 
 \family typewriter
-make -f Makefile_copper.linux
+make -f Makefile
 \end_layout
 
 \begin_layout Section
@@ -272,9 +272,102 @@ MacOSX
 \end_layout
 
 \begin_layout Standard
+Most of the installation instructions are similar to Linux for MacOSX however
+ there are some differences.
+ 
+\end_layout
+
+\begin_layout Enumerate
+install the developer tools for MacOSX (these should be on the disk that
+ comes with the computer or you can always download from apple.
+ You will need this to install anything from source code on the Mac.
+\end_layout
+
+\begin_layout Enumerate
+untar and install armadillo (contained in the downloaded package)
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+there are special instructions for the Mac so please look at the armadillo
+ README.txt within the directory
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+install the GNU Gnu Scientific Library which can be found here 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+http://www.gnu.org/software/gsl/
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+if you are going to use the big tree option for compilation (good for trees
+ over 1000 tips) you should do the following:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+in the gmpfrxx directory, untar the gmp-4.3.1.tar.bz2 file and go inside and
+ install with 
+\family typewriter
+sudo apt-get install m4
+\family default
+,
+\family typewriter
+ ./configure --enable-cxx
+\family default
+, 
+\family typewriter
+make
+\family default
+, 
+\family typewriter
+sudo make install
+\family default
+)
+\end_layout
+
+\begin_layout Enumerate
+untar the mpfr-2.4.2.tar.gz and do the standard 
+\family typewriter
+./configure
+\family default
+,
+\family typewriter
+ make
+\family default
+,
+\family typewriter
+ sudo make install
+\family default
+)
+\end_layout
+
+\begin_layout Enumerate
+finally go back into the gmpfrxx and just type 
+\family typewriter
+make
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+make lagrange with the command 
+\family typewriter
+make -f Makefile.MAC
+\end_layout
+
+\begin_layout Standard
 When available, a binary version of Lagrange is made available for Mac users
  to bypass the need to compile it from source.
- 
 \end_layout
 
 \begin_layout Section
@@ -290,19 +383,198 @@ Currently being test on a Windows 7 machines, but check out the instructions
 Makefile description
 \end_layout
 
-\begin_layout Chapter
+\begin_layout Standard
+There are some configurable items in the Makefile for each system that you
+ should be aware of in case somethings goes wrong.
+ Below are some lines of which to be aware.
+\end_layout
+
+\begin_layout Subsection
+Linux
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "85col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+#if you have an error related to python during compilation, check this line
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+PYTHON_LIB = -I/usr/include/python2.6/
+\end_layout
+
+\begin_layout Plain Layout
+# requires fortran, gsl, and pthread -- and -ldl -lutil -lpython2.6 are for
+ python 
+\end_layout
+
+\begin_layout Plain Layout
+# if llapack lblas fail, try larmadillo 
+\end_layout
+
+\begin_layout Plain Layout
+LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread -lgmp
+ -ldl -lutil -lpython2.6
+\end_layout
+
+\begin_layout Plain Layout
+########### 
+\end_layout
+
+\begin_layout Plain Layout
+# change to yes for bigtrees -- loses about 3x speed 
+\end_layout
+
+\begin_layout Plain Layout
+# if 64 bit GSL try CPPFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" ./configure
+ 
+\end_layout
+
+\begin_layout Plain Layout
+# need to install gmp (with ./configure --enable-cxx) and mpfr and gmpfrxx
+ 
+\end_layout
+
+\begin_layout Plain Layout
+####### 
+\end_layout
+
+\begin_layout Plain Layout
+BIG = no 
+\end_layout
+
+\begin_layout Plain Layout
+#this is where the fortran compiler should be
+\end_layout
+
+\begin_layout Plain Layout
+FC = /usr/bin/gfortran
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+MacOSX
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "85col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+#if you have an error related to python during compilation, check these
+ lines
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+PYTHON_LIB = -I/System/Library/Frameworks/Python.framework/Headers/ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+#output of 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+#>>> import distutils.sysconfig 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+#>>> distutils.sysconfig.get_config_var('LINKFORSHARED') 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\size footnotesize
+PYTHON_REQ = -u _PyMac_Error /System/Library/Frameworks/Python.framework/Versions
+/2.6/Python
+\end_layout
+
+\begin_layout Plain Layout
+########### 
+\end_layout
+
+\begin_layout Plain Layout
+# change to yes for bigtrees -- loses about 3x speed 
+\end_layout
+
+\begin_layout Plain Layout
+# if 64 bit GSL try CPPFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" ./configure
+ 
+\end_layout
+
+\begin_layout Plain Layout
+# need to install gmp (with ./configure --enable-cxx) and mpfr and gmpfrxx
+ 
+\end_layout
+
+\begin_layout Plain Layout
+####### 
+\end_layout
+
+\begin_layout Plain Layout
+BIG = no 
+\end_layout
+
+\begin_layout Plain Layout
+#this is where the fortran compiler should be
+\end_layout
+
+\begin_layout Plain Layout
+FC = /usr/bin/gfortran
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
 Configuration file
 \end_layout
 
 \begin_layout Standard
-In order for Lagrange++ to run it must be informed of your tree and data
- and parameters.
+In order for Lagrange to run it must be informed of your tree and data and
+ parameters.
  This is done in a plain text file the options for which are described below.
  
 \end_layout
 
 \begin_layout Section
-Native Lagrange++ configuration file
+Typical configuration file
 \end_layout
 
 \begin_layout Standard
@@ -395,7 +667,7 @@ vspace{5 mm}
 
 \end_inset
 
-In this example, Lagrange++ will look for a treefile named aesculus.tre in
+In this example, Lagrange will look for a treefile named aesculus.tre in
  the current directory and a datafile named aesculus.data in the current
  directory.
  It will them assume that the area names corresponding to the data in the
@@ -955,7 +1227,7 @@ estimate_dispersal_mask
  
 \end_layout
 
-\begin_layout Section
+\begin_layout Part
 Python Lagrange configuration
 \end_layout
 
