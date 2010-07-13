@@ -137,10 +137,6 @@ armadillo -- linear algebra
 \end_layout
 
 \begin_layout Itemize
-octave -- linear algebra
-\end_layout
-
-\begin_layout Itemize
 gmp -- optional, for calulating exceptionally large trees
 \end_layout
 
