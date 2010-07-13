@@ -29,7 +29,7 @@ using namespace arma;
 #include "vector_node_object.h"
 
 //octave usage
-#include <octave/oct.h>
+//#include <octave/oct.h>
 
 #ifdef BIGTREE
 #include "gmpfrxx/gmpfrxx.h"
