@@ -755,9 +755,9 @@ void BioGeoTree_copper::prepare_stochmap_reverse_all_nodes(int from , int to){
 		for (unsigned int l = 0;l<tsegs->size();l++){
 			int per = (*tsegs)[l].getPeriod();
 			double dur =  (*tsegs)[l].getDuration();
-			ComplexMatrix eigvec(ndists,ndists);eigvec.fill(0);
-			ComplexMatrix eigval(ndists,ndists);eigval.fill(0);
-			bool isImag = rootratemodel->get_eigenvec_eigenval_from_Q_octave(&eigval, &eigvec,per);
+			cx_mat eigvec(ndists,ndists);eigvec.fill(0);
+			cx_mat eigval(ndists,ndists);eigval.fill(0);
+			bool isImag = rootratemodel->get_eigenvec_eigenval_from_Q(&eigval, &eigvec,per);
 			Matrix Ql(ndists,ndists);Ql.fill(0);Ql(from,to) = rootratemodel->get_Q()[per][from][to];
 			Matrix W(ndists,ndists);W.fill(0);W(from,from) = 1;
 			ComplexMatrix summed(ndists,ndists);summed.fill(0);

@@ -20,7 +20,7 @@ using namespace std;
 using namespace arma;
 
 //octave usage
-#include <octave/oct.h>
+//#include <octave/oct.h>
 
 class RateModel{
 private:
@@ -88,8 +88,8 @@ public:
 	 */
 	vector< vector< vector<double> > > & get_Q();
 	//this should be used for getting the eigenvectors and eigenvalues
-	void get_eigenvec_eigenval_from_Q(mat * eigenvalues, mat * eigenvectors, int period);
-	bool get_eigenvec_eigenval_from_Q_octave(ComplexMatrix * eigenvalues, ComplexMatrix * eigenvectors, int period);
+	void get_eigenvec_eigenval_from_Q(cx_mat * eigenvalues, cx_mat * eigenvectors, int period);
+	//bool get_eigenvec_eigenval_from_Q_octave(ComplexMatrix * eigenvalues, ComplexMatrix * eigenvectors, int period);
 
 	//REQUIRES BOOST
 	//vector<vector<double > > setup_P(int period, double t);

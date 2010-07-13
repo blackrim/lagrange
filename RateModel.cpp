@@ -28,7 +28,7 @@ using namespace std;
 using namespace arma;
 
 //octave usage
-#include <octave/oct.h>
+//#include <octave/oct.h>
 
 
 RateModel::RateModel(int na, bool ge, vector<double> pers, bool sp):
@@ -716,8 +716,10 @@ inline double roundto(double in){
 /*
  * this should be used to caluculate the eigenvalues and eigenvectors
  * as U * Q * U-1 -- eigen decomposition
+ *
+ * this should use the armadillo library
  */
-void RateModel::get_eigenvec_eigenval_from_Q(mat * eigval, mat * eigvec, int period){
+void RateModel::get_eigenvec_eigenval_from_Q(cx_mat * eigval, cx_mat * eigvec, int period){
 	mat tQ(int(Q[period].size()),int(Q[period].size())); tQ.fill(0);
 	for(unsigned int i=0;i<Q[period].size();i++){
 		for(unsigned int j=0;j<Q[period].size();j++){
@@ -745,7 +747,9 @@ void RateModel::get_eigenvec_eigenval_from_Q(mat * eigval, mat * eigvec, int per
 }
 
 //trying not to use octave at the moment
-bool RateModel::get_eigenvec_eigenval_from_Q_octave(ComplexMatrix * eigval, ComplexMatrix * eigvec, int period){
+/*
+ * 
+ * bool RateModel::get_eigenvec_eigenval_from_Q_octave(ComplexMatrix * eigval, ComplexMatrix * eigvec, int period){
 	ComplexMatrix tQ = ComplexMatrix(int(Q[period].size()),int(Q[period].size()));
 	for(unsigned int i=0;i<Q[period].size();i++){
 		for(unsigned int j=0;j<Q[period].size();j++){
@@ -771,7 +775,7 @@ bool RateModel::get_eigenvec_eigenval_from_Q_octave(ComplexMatrix * eigval, Comp
 	}
 	return isImag;
 	//cout <<(eig.eigenvalues() * eig.eigenvectors()) << endl;
-}
+}*/
 
 /**/
 
