@@ -88,7 +88,7 @@ public:
 	 */
 	vector< vector< vector<double> > > & get_Q();
 	//this should be used for getting the eigenvectors and eigenvalues
-	void get_eigenvec_eigenval_from_Q(cx_mat * eigenvalues, cx_mat * eigenvectors, int period);
+	bool get_eigenvec_eigenval_from_Q(cx_mat * eigenvalues, cx_mat * eigenvectors, int period);
 	//bool get_eigenvec_eigenval_from_Q_octave(ComplexMatrix * eigenvalues, ComplexMatrix * eigenvectors, int period);
 
 	//REQUIRES BOOST

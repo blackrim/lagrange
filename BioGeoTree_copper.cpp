@@ -612,8 +612,8 @@ void BioGeoTree_copper::reverse(Node & node){
 			for(unsigned int j=0;j<dists->size();j++){revconds->at(j) = 0;}
 			RateModel * rm = tsegs->at(ts).getModel();
 			vector<vector<double > > * p = &rm->stored_p_matrices[tsegs->at(ts).getPeriod()][tsegs->at(ts).getDuration()];
-			Matrix * EN = NULL;
-			Matrix * ER = NULL;
+			mat * EN = NULL;
+			mat * ER = NULL;
 			VectorNodeObject<double> tempmoveAer(tempA);
 			VectorNodeObject<double> tempmoveAen(tempA);
 			if(stochastic == true){
@@ -758,20 +758,20 @@ void BioGeoTree_copper::prepare_stochmap_reverse_all_nodes(int from , int to){
 			cx_mat eigvec(ndists,ndists);eigvec.fill(0);
 			cx_mat eigval(ndists,ndists);eigval.fill(0);
 			bool isImag = rootratemodel->get_eigenvec_eigenval_from_Q(&eigval, &eigvec,per);
-			Matrix Ql(ndists,ndists);Ql.fill(0);Ql(from,to) = rootratemodel->get_Q()[per][from][to];
-			Matrix W(ndists,ndists);W.fill(0);W(from,from) = 1;
-			ComplexMatrix summed(ndists,ndists);summed.fill(0);
-			ComplexMatrix summedR(ndists,ndists);summedR.fill(0);
+			mat Ql(ndists,ndists);Ql.fill(0);Ql(from,to) = rootratemodel->get_Q()[per][from][to];
+			mat W(ndists,ndists);W.fill(0);W(from,from) = 1;
+			cx_mat summed(ndists,ndists);summed.fill(0);
+			cx_mat summedR(ndists,ndists);summedR.fill(0);
 			for(int i=0;i<ndists;i++){
-				Matrix Ei(ndists,ndists);Ei.fill(0);Ei(i,i)=1;
-				ComplexMatrix Si(ndists,ndists);
-				Si = eigvec * Ei * eigvec.inverse();
+				mat Ei(ndists,ndists);Ei.fill(0);Ei(i,i)=1;
+				cx_mat Si(ndists,ndists);
+				Si = eigvec * Ei * inv(eigvec);
 				for(int j=0;j<ndists;j++){
-					Complex dij = (eigval(i,i)-eigval(j,j)) * dur;
-					Matrix Ej(ndists,ndists);Ej.fill(0);Ej(j,j)=1;
-					ComplexMatrix Sj(ndists,ndists);
-					Sj = eigvec * Ej * eigvec.inverse();
-					Complex Iijt = 0;
+					cx_double dij = (eigval(i,i)-eigval(j,j)) * dur;
+					mat Ej(ndists,ndists);Ej.fill(0);Ej(j,j)=1;
+					cx_mat Sj(ndists,ndists);
+					Sj = eigvec * Ej * inv(eigvec);
+					cx_double Iijt = 0;
 					if (abs(dij) > 10){
 						Iijt = (exp(eigval(i,i)*dur)-exp(eigval(j,j)*dur))/(eigval(i,i)-eigval(j,j));
 					}else if(abs(dij) < 10e-20){

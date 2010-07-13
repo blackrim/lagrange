@@ -719,7 +719,7 @@ inline double roundto(double in){
  *
  * this should use the armadillo library
  */
-void RateModel::get_eigenvec_eigenval_from_Q(cx_mat * eigval, cx_mat * eigvec, int period){
+bool RateModel::get_eigenvec_eigenval_from_Q(cx_mat * eigval, cx_mat * eigvec, int period){
 	mat tQ(int(Q[period].size()),int(Q[period].size())); tQ.fill(0);
 	for(unsigned int i=0;i<Q[period].size();i++){
 		for(unsigned int j=0;j<Q[period].size();j++){
@@ -732,18 +732,21 @@ void RateModel::get_eigenvec_eigenval_from_Q(cx_mat * eigval, cx_mat * eigvec, i
 	cx_colvec eigva;
 	cx_mat eigve;
 	eig_gen(eigva,eigve,tQ);
-
+	bool isImag = false;
 	for(unsigned int i=0;i<Q[period].size();i++){
 		for(unsigned int j=0;j<Q[period].size();j++){
 			if(i==j)
-				(*eigval)(i,j) = real(eigva(i));
+				(*eigval)(i,j) = eigva(i);
 			else
 				(*eigval)(i,j) = 0;
-			(*eigvec)(i,j) = real(eigve(i,j));
+			(*eigvec)(i,j) = eigve(i,j);
+			if(imag((*eigvec)(i,j)) > 0 || imag((*eigval)(i,j)))
+				isImag = true;
 		}
 	}
 	//cout << eigva << endl;
 	//cout << tQ - ((*eigvec) * (*eigval) * inv(*eigvec)) <<endl;
+	return isImag;
 }
 
 //trying not to use octave at the moment
