@@ -52,33 +52,14 @@ namespace {
  * sloppy beginning but best for now because of the complicated bits
  */
 
-BioGeoTree_copper::BioGeoTree_copper(Tree * tr, vector<double> ps){
-	seg = "segments";
-	age = "age";
-	dc = "dist_conditionals";
-	en = "excluded_dists";
-	andc = "anc_dist_conditionals";
-	/*
-	 * reverse bit
-	 */
-	revB  = "revB";
-	/*
-	 * end of the reverse bits
-	 */
-	/*
-	 * stochastic mapping bit
-	 */
-	rev_exp_number = "rev_exp_number";
-	rev_exp_time = "rev_exp_time";
-	stochastic = false;
-	/*
-	 * end stochastic mapping bit
-	 */
-	store_p_matrices = false;
-	use_stored_matrices = false;
-	tree = tr;
+BioGeoTree_copper::BioGeoTree_copper(Tree * tr, vector<double> ps):tree(tr),periods(ps),
+		seg("segments"),age("age"),dc("dist_conditionals"),en("excluded_dists"),
+		andc("anc_dist_conditionals"),columns(NULL),whichcolumns(NULL),rootratemodel(NULL),
+		distmap(NULL),store_p_matrices(false),use_stored_matrices(false),revB("revB"),
+		rev(false),rev_exp_number("rev_exp_number"),rev_exp_time("rev_exp_time"),
+		stochastic(false),stored_EN_matrices(map<int,map<double, mat > >()),
+		stored_ER_matrices(map<int,map<double, mat > >()){
 
-	periods = ps;
 	/*
 	 * initialize each node with segments
 	 */

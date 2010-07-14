@@ -26,7 +26,7 @@ using namespace std;
 
 
 AncSplit::AncSplit(RateModel * mod,int dist,int ldesc,int rdesc,double we):model(mod),weight(we),
-		ancdistint(dist),ldescdistint(ldesc),rdescdistint(rdesc){}
+		likelihood(0),ancdistint(dist),ldescdistint(ldesc),rdescdistint(rdesc){}
 
 RateModel * AncSplit::getModel(){
 	return model;

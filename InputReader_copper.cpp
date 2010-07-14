@@ -21,7 +21,7 @@ using namespace std;
 #include "tree.h"
 #include "node.h"
 
-InputReader::InputReader(){
+InputReader::InputReader():nareas(0),nspecies(0){
 }
 
 void InputReader::readMultipleTreeFile(string filename, vector<Tree *> & ret){

@@ -14,11 +14,9 @@ using namespace std;
 
 #include "vector_node_object.h"
 
-BranchSegment::BranchSegment(double dur,int per){
-	duration = dur;
-	period = per;
-	startdistint = -666;
-}
+BranchSegment::BranchSegment(double dur,int per):duration(dur),period(per),
+		model(NULL),fossilareaindices(vector<int>()),startdistint(-666),
+		distconds(NULL),ancdistconds(NULL){}
 
 void BranchSegment::setModel(RateModel * mod){
 	model = mod;

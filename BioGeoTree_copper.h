@@ -46,7 +46,6 @@ private:
 	map<int, vector<int> > * distmap; // a map of int and dist
 	bool store_p_matrices;
 	bool use_stored_matrices;
-	double scale;
 
 	//reverse bits
 	string revB;
@@ -109,6 +108,9 @@ public:
 	vector<double> calculate_ancstate_reverse(Node & node,bool marg);
 #endif
 	~BioGeoTree_copper();
+	//need to override these at some point
+	BioGeoTree_copper(const BioGeoTree_copper &L);             // copy constructor
+    BioGeoTree_copper & operator=(const BioGeoTree_copper &L);
 
 /*
  * for calculating forward and reverse for expected values (stochastic mapping)
