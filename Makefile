@@ -61,8 +61,8 @@ CPP_DEPS += \
 # DEBUG = -DDEBUG
 
 TARGET_NAME = lagrange_cpp
-
-C_OPT = -O3 -ftree-vectorize -ffast-math -Weffc++ -g3
+#for cleaning use -Weffc++
+C_OPT = -O3 -ftree-vectorize -ffast-math -g3
 #C_OPT = -Wall -g
 
 # for reading web input files
@@ -105,11 +105,7 @@ FFLAGS	= -O3
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ./%.f
-	@echo 'Building file: $<'
-	@echo 'Invoking: gfortran Fortran Compiler'
 	$(FC) $(FFLAGS) -c $<
-	@echo 'Finished building: $<'
-	@echo ' '
 
 FORT_OBJS += \
 ./clock.o \
@@ -122,11 +118,7 @@ FORT_OBJS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ./%.cpp
-	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
 	g++ $(DEBUG) $(BIGTREE) $(PYTHON_LIB) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
 
 # link library locations
 LINK_LIB_DIRS = -L/usr/lib/ -L/usr/local/lib/ -L./gmpfrxx/
