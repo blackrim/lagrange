@@ -72,11 +72,11 @@ C_OPT = -O3 -ftree-vectorize -ffast-math -Wall -g
 #BOOST_LIB = -I/Users/smitty/programming/LIBRARIES/boost_1_39_0
 
 #for reading web input files
-PYTHON_LIB = -I/System/Library/Frameworks/Python.framework/Headers/
+#PYTHON_LIB = -I/System/Library/Frameworks/Python.framework/Headers/
 #output of 
 #>>> import distutils.sysconfig
 #>>> distutils.sysconfig.get_config_var('LINKFORSHARED')
-PYTHON_REQ = -u _PyMac_Error /System/Library/Frameworks/Python.framework/Versions/2.6/Python
+#PYTHON_REQ = -u _PyMac_Error /System/Library/Frameworks/Python.framework/Versions/2.6/Python
 
 
 # Each subdirectory must supply rules for building sources it contributes

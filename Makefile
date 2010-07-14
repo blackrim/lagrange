@@ -66,19 +66,20 @@ C_OPT = -O3 -ftree-vectorize -ffast-math -Weffc++ -g3
 #C_OPT = -Wall -g
 
 # for reading web input files
-PYTHON_LIB = -I/usr/include/python2.6/
+#PYTHON_LIB = -I/usr/include/python2.6/
 # output of 
 # >>> import distutils.sysconfig
 # >>> distutils.sysconfig.get_config_var('LINKFORSHARED')
-PYTHON_REQ = -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
+#PYTHON_REQ = -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
 
 #if using octave
 #INCLUDES = -I/usr/include/octave-3.0.5/octave/
 #INCLUDES = -I/usr/include/octave-3.2.4/
 
 # requires fortran, gsl, and pthread -- and -ldl -lutil -lpython2.6 are for python
+#-ldl -lutil -lpython2.6
 # if llapack lblas fail, try larmadillo
-LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread -lgmp -ldl -lutil -lpython2.6
+LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread  
 
 ###########
 # change to yes for bigtrees -- loses about 3x speed
