@@ -133,7 +133,7 @@ Gnu Scientific Library (GSL) -- optimization
 \end_layout
 
 \begin_layout Itemize
-armadillo -- linear algebra
+armadillo -- linear algebra (which requires cmake)
 \end_layout
 
 \begin_layout Itemize
@@ -178,7 +178,8 @@ sudo apt-get install build-essential
 \end_layout
 
 \begin_layout Enumerate
-untar and install armadillo (contained in the downloaded package)
+untar and install armadillo (contained in the downloaded package, this is
+ newer than the repository version)
 \end_layout
 
 \begin_deeper
@@ -281,6 +282,7 @@ Most of the installation instructions are similar to Linux for MacOSX however
 install the developer tools for MacOSX (these should be on the disk that
  comes with the computer or you can always download from apple.
  You will need this to install anything from source code on the Mac.
+ You will also need cmake for armadillo (see below).
 \end_layout
 
 \begin_layout Enumerate
@@ -300,6 +302,7 @@ install the GNU Gnu Scientific Library which can be found here
 status open
 
 \begin_layout Plain Layout
+
 http://www.gnu.org/software/gsl/
 \end_layout
 
