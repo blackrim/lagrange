@@ -529,10 +529,11 @@ int main(int argc, char* argv[]){
 							cout << "Ancestral states for:\t" << intrees[i]->getInternalNode(j)->getNumber() <<endl;
 #ifdef BIGTREE
 							vector<mpfr_class> rast = bgt.calculate_ancstate_reverse(*intrees[i]->getInternalNode(j),marginal);
+							totlike = calculate_vector_mpfr_class_double_sum(rast);
 #else
 							vector<double> rast = bgt.calculate_ancstate_reverse(*intrees[i]->getInternalNode(j),marginal);
-#endif
 							totlike = calculate_vector_double_sum(rast);
+#endif
 							tt.summarizeAncState(intrees[i]->getInternalNode(j),rast,areanamemaprev,&rm);
 							cout << endl;
 
@@ -599,13 +600,18 @@ int main(int argc, char* argv[]){
 						for(int j=0;j<intrees[i]->getNodeCount();j++){
 							if(intrees[i]->getNode(j) != intrees[i]->getRoot()){
 #ifdef BIGTREE
-								vector<mpfr_class> rsm = bgt.reverse_stochmap(*intrees[i]->getNode(j));
+								//vector<mpfr_class> rsm = bgt.reverse_stochmap(*intrees[i]->getNode(j));
+								vector<mpfr_class> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),true);
 #else
 								vector<double> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),true);
 #endif
 								//cout << calculate_vector_double_sum(rsm) / totlike << endl;
 								VectorNodeObject<double> stres(1);
+#ifdef BIGTREE
+								stres[0] = calculate_vector_mpfr_class_double_sum(rsm) / totlike;
+#else
 								stres[0] = calculate_vector_double_sum(rsm) / totlike;
+#endif
 								intrees[i]->getNode(j)->assocObject("stoch", stres);
 							}
 						}
@@ -631,13 +637,18 @@ int main(int argc, char* argv[]){
 						for(int j=0;j<intrees[i]->getNodeCount();j++){
 							if(intrees[i]->getNode(j) != intrees[i]->getRoot()){
 #ifdef BIGTREE
-								vector<mpfr_class> rsm = bgt.reverse_stochmap(*intrees[i]->getNode(j));
+								//vector<mpfr_class> rsm = bgt.reverse_stochmap(*intrees[i]->getNode(j));
+								vector<mpfr_class> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),false);
 #else
 								vector<double> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),false);
 #endif
 								//cout << calculate_vector_double_sum(rsm) / totlike << endl;
 								VectorNodeObject<double> stres(1);
+#ifdef BIGTREE
+								stres[0] = calculate_vector_mpfr_class_double_sum(rsm) / totlike;
+#else
 								stres[0] = calculate_vector_double_sum(rsm) / totlike;
+#endif
 								intrees[i]->getNode(j)->assocObject("stoch", stres);
 							}
 						}

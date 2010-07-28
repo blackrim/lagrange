@@ -44,6 +44,9 @@ class BranchSegment{
 		VectorNodeObject<mpfr_class> * distconds;
 		VectorNodeObject<mpfr_class> alphas;
 		VectorNodeObject<mpfr_class> * ancdistconds;//for ancestral state reconstructions
+		VectorNodeObject<mpfr_class> seg_sp_alphas;
+		VectorNodeObject<mpfr_class> seg_sp_stoch_map_revB_time;
+		VectorNodeObject<mpfr_class> seg_sp_stoch_map_revB_number;
 #else
 		VectorNodeObject<double> * distconds;
 		VectorNodeObject<double> alphas; // alpha for the entire branch -- stored in the 0th segment for anc calc

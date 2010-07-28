@@ -587,7 +587,11 @@ void BioGeoTree_copper::reverse(Node & node){
 
 		//now calculate node B
 		VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) node.getObject(seg));
+#ifdef BIGTREE
+		vector<mpfr_class> tempmoveA(tempA);
+#else
 		vector<double> tempmoveA(tempA);
+#endif
 		//for(unsigned int ts=0;ts<tsegs->size();ts++){
 		for(int ts = tsegs->size()-1;ts != -1;ts--){
 			for(unsigned int j=0;j<dists->size();j++){revconds->at(j) = 0;}
@@ -595,8 +599,13 @@ void BioGeoTree_copper::reverse(Node & node){
 			vector<vector<double > > * p = &rm->stored_p_matrices[tsegs->at(ts).getPeriod()][tsegs->at(ts).getDuration()];
 			mat * EN = NULL;
 			mat * ER = NULL;
+#ifdef BIGTREE
+			VectorNodeObject<mpfr_class> tempmoveAer(tempA);
+			VectorNodeObject<mpfr_class> tempmoveAen(tempA);
+#else
 			VectorNodeObject<double> tempmoveAer(tempA);
 			VectorNodeObject<double> tempmoveAen(tempA);
+#endif
 			if(stochastic == true){
 				//initialize the segment B's
 				for(unsigned int j=0;j<dists->size();j++){tempmoveAer[j] = 0;}
@@ -786,14 +795,27 @@ void BioGeoTree_copper::prepare_stochmap_reverse_all_nodes(int from , int to){
  * called directly after reverse_stochastic
  */
 
-vector<double> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool time){
+#ifdef BIGTREE
+vector<mpfr_class> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool time)
+#else
+vector<double> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool time)
+#endif
+{
 	if (node.isExternal()==false){//is not a tip
 		VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) node.getObject(seg));
 		vector<vector<int> > * dists = rootratemodel->getDists();
+#ifdef BIGTREE
+		vector<mpfr_class> totalExp (dists->size(),0);
+#else
 		vector<double> totalExp (dists->size(),0);
+#endif
 		for(int t = 0;t<tsegs->size();t++){
 			if (t == 0){
+#ifdef BIGTREE
+				vector<mpfr_class> Bs;
+#else
 				vector<double> Bs;
+#endif
 				if(time)
 					Bs = tsegs->at(t).seg_sp_stoch_map_revB_time;
 				else
@@ -805,9 +827,15 @@ vector<double> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool ti
 				Node * c2 = &node.getChild(1);
 				VectorNodeObject<BranchSegment>* tsegs1 = ((VectorNodeObject<BranchSegment>*) c1->getObject(seg));
 				VectorNodeObject<BranchSegment>* tsegs2 = ((VectorNodeObject<BranchSegment>*) c2->getObject(seg));
+#ifdef BIGTREE
+				VectorNodeObject<mpfr_class> v1  =tsegs1->at(0).alphas;
+				VectorNodeObject<mpfr_class> v2 = tsegs2->at(0).alphas;
+				VectorNodeObject<mpfr_class> LHOODS (dists->size(),0);
+#else
 				VectorNodeObject<double> v1  =tsegs1->at(0).alphas;
 				VectorNodeObject<double> v2 = tsegs2->at(0).alphas;
 				VectorNodeObject<double> LHOODS (dists->size(),0);
+#endif
 				for (unsigned int i = 0; i < dists->size(); i++) {
 					if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
 						VectorNodeObject<vector<int> >* exdist =
@@ -829,13 +857,22 @@ vector<double> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool ti
 					totalExp[i] = LHOODS[i];
 				}
 			}else{
+#ifdef BIGTREE
+				vector<mpfr_class> alphs = tsegs->at(t-1).seg_sp_alphas;
+				vector<mpfr_class> Bs;
+#else
 				vector<double> alphs = tsegs->at(t-1).seg_sp_alphas;
 				vector<double> Bs;
+#endif
 				if(time)
 					Bs = tsegs->at(t).seg_sp_stoch_map_revB_time;
 				else
 					Bs =  tsegs->at(t).seg_sp_stoch_map_revB_number;
+#ifdef BIGTREE
+				VectorNodeObject<mpfr_class> LHOODS (dists->size(),0);
+#else
 				VectorNodeObject<double> LHOODS (dists->size(),0);
+#endif
 				for (unsigned int i = 0; i < dists->size(); i++) {
 					if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
 						VectorNodeObject<vector<int> >* exdist =
@@ -851,20 +888,32 @@ vector<double> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool ti
 				}
 			}
 		}
-
+		//not sure if this should return a double or not when doing a bigtree
 		return totalExp;
 	}else{
 		VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) node.getObject(seg));
 		vector<vector<int> > * dists = rootratemodel->getDists();
+#ifdef BIGTREE
+		vector<mpfr_class> totalExp (dists->size(),0);
+#else
 		vector<double> totalExp (dists->size(),0);
+#endif
 		for(int t = 0;t<tsegs->size();t++){
 			if(t == 0){
+#ifdef BIGTREE
+				vector<mpfr_class> Bs;
+#else
 				vector<double> Bs;
+#endif
 				if(time)
 					Bs = tsegs->at(t).seg_sp_stoch_map_revB_time;
 				else
 					Bs =  tsegs->at(t).seg_sp_stoch_map_revB_number;
+#ifdef BIGTREE
+				VectorNodeObject<mpfr_class> LHOODS (dists->size(),0);
+#else
 				VectorNodeObject<double> LHOODS (dists->size(),0);
+#endif
 				for (unsigned int i = 0; i < dists->size(); i++) {
 					if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
 						VectorNodeObject<vector<int> >* exdist =
@@ -879,13 +928,22 @@ vector<double> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool ti
 					totalExp[i] = LHOODS[i];
 				}
 			}else{
+#ifdef BIGTREE
+				vector<mpfr_class> alphs = tsegs->at(t-1).seg_sp_alphas;
+				vector<mpfr_class> Bs;
+#else
 				vector<double> alphs = tsegs->at(t-1).seg_sp_alphas;
 				vector<double> Bs;
+#endif
 				if(time)
 					Bs = tsegs->at(t).seg_sp_stoch_map_revB_time;
 				else
 					Bs =  tsegs->at(t).seg_sp_stoch_map_revB_number;
+#ifdef BIGTREE
+				VectorNodeObject<mpfr_class> LHOODS (dists->size(),0);
+#else
 				VectorNodeObject<double> LHOODS (dists->size(),0);
+#endif
 				for (unsigned int i = 0; i < dists->size(); i++) {
 					if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
 						VectorNodeObject<vector<int> >* exdist =

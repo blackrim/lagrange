@@ -116,7 +116,11 @@ public:
  * for calculating forward and reverse for expected values (stochastic mapping)
  */
 	void prepare_stochmap_reverse_all_nodes(int, int);
+#ifdef BIGTREE
+	vector<mpfr_class> calculate_reverse_stochmap(Node &, bool);
+#else
 	vector<double> calculate_reverse_stochmap(Node &, bool);
+#endif
 	vector<double> calculate_reverse_stochmap_TEST(Node & node,bool time);
 
 

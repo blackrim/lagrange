@@ -21,7 +21,21 @@
 #include <algorithm>
 using namespace std;
 
+#ifdef BIGTREE
+#include "gmpfrxx/gmpfrxx.h"
+#endif
 
+
+#ifdef BIGTREE
+double calculate_vector_mpfr_class_double_sum(vector<mpfr_class> & in){
+	double sum = 0;
+	for (unsigned int i=0;i<in.size();i++){
+		double x = in[i].get_d();
+		sum += x;
+	}
+	return sum;
+}
+#endif
 
 double calculate_vector_double_sum(vector<double> & in){
 	double sum = 0;
@@ -30,6 +44,8 @@ double calculate_vector_double_sum(vector<double> & in){
 	}
 	return sum;
 }
+
+
 
 /*
  * only used because sometimes will send a null

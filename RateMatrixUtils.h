@@ -17,12 +17,20 @@
 #include <vector>
 using namespace std;
 
+#ifdef BIGTREE
+#include "gmpfrxx/gmpfrxx.h"
+#endif
+
+
 /*
   most of these utilities calculate simple math on matrices and vectors
   and they should only be used if there is the chance that there will 
   be a null vector or matrix. otherwise, c++ numerics library should
   be used for speed.
  */
+#ifdef BIGTREE
+double calculate_vector_mpfr_class_double_sum(vector<mpfr_class> & in);
+#endif
 double calculate_vector_double_sum(vector<double> & in);
 int calculate_vector_int_sum(vector<int> * in);
 int get_vector_int_index_from_multi_vector_int(vector<int> * in, vector<vector<int> > * in2);
