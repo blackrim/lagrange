@@ -16,12 +16,12 @@ using namespace std;
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#include "BioGeoTree_copper.h"
+#include "BioGeoTree.h"
 #include "RateModel.h"
 
 class BayesianBioGeoAllDispersal{
 private:
-	BioGeoTree_copper * tree;
+	BioGeoTree * tree;
 	RateModel * rm;
 	int gens;
 	bool marginal;
@@ -35,7 +35,7 @@ private:
 	double calculate_sliding_log(double value, double sliding, double * hastings);
 	
 public:
-	BayesianBioGeoAllDispersal(BioGeoTree_copper * intree,RateModel * inrm, bool marg, int gen);
+	BayesianBioGeoAllDispersal(BioGeoTree * intree,RateModel * inrm, bool marg, int gen);
 	void run_global_dispersal_extinction();
 	
 	

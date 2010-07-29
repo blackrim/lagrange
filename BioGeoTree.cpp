@@ -16,9 +16,9 @@ using namespace std;
 #include <armadillo>
 using namespace arma;
 
-#include "BioGeoTree_copper.h"
-#include "BioGeoTreeTools_copper.h"
-#include "BranchSegment_copper.h"
+#include "BioGeoTree.h"
+#include "BioGeoTreeTools.h"
+#include "BranchSegment.h"
 #include "RateMatrixUtils.h"
 #include "RateModel.h"
 #include "AncSplit.h"
@@ -51,7 +51,7 @@ namespace {
  * sloppy beginning but best for now because of the complicated bits
  */
 
-BioGeoTree_copper::BioGeoTree_copper(Tree * tr, vector<double> ps):tree(tr),periods(ps),
+BioGeoTree::BioGeoTree(Tree * tr, vector<double> ps):tree(tr),periods(ps),
 		seg("segments"),age("age"),dc("dist_conditionals"),en("excluded_dists"),
 		andc("anc_dist_conditionals"),columns(NULL),whichcolumns(NULL),rootratemodel(NULL),
 		distmap(NULL),store_p_matrices(false),use_stored_matrices(false),revB("revB"),
@@ -113,15 +113,15 @@ BioGeoTree_copper::BioGeoTree_copper(Tree * tr, vector<double> ps):tree(tr),peri
 	}
 }
 
-void BioGeoTree_copper::set_store_p_matrices(bool i){
+void BioGeoTree::set_store_p_matrices(bool i){
 	store_p_matrices = i;
 }
 
-void BioGeoTree_copper::set_use_stored_matrices(bool i){
+void BioGeoTree::set_use_stored_matrices(bool i){
 	use_stored_matrices = i;
 }
 
-void BioGeoTree_copper::set_default_model(RateModel * mod){
+void BioGeoTree::set_default_model(RateModel * mod){
 	rootratemodel = mod;
 	for(int i=0;i<tree->getNodeCount();i++){
 			VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) tree->getNode(i)->getObject(seg));
@@ -157,7 +157,7 @@ void BioGeoTree_copper::set_default_model(RateModel * mod){
 #endif
 }
 
-void BioGeoTree_copper::update_default_model(RateModel * mod){
+void BioGeoTree::update_default_model(RateModel * mod){
 	rootratemodel = mod;
 
 	for(int i=0;i<tree->getNodeCount();i++){
@@ -168,7 +168,7 @@ void BioGeoTree_copper::update_default_model(RateModel * mod){
 	}
 }
 
-void BioGeoTree_copper::set_tip_conditionals(map<string,vector<int> > distrib_data){
+void BioGeoTree::set_tip_conditionals(map<string,vector<int> > distrib_data){
 	int numofleaves = tree->getExternalNodeCount();
 	for(int i=0;i<numofleaves;i++){
 		VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) tree->getExternalNode(i)->getObject(seg));
@@ -179,7 +179,7 @@ void BioGeoTree_copper::set_tip_conditionals(map<string,vector<int> > distrib_da
 	}
 }
 
-void BioGeoTree_copper::set_excluded_dist(vector<int> ind,Node * node){
+void BioGeoTree::set_excluded_dist(vector<int> ind,Node * node){
 	((VectorNodeObject<vector<int> >*) node->getObject(en))->push_back(ind);
 }
 
@@ -201,7 +201,7 @@ mpfr_class calculate_vector_mpfr_class_sum(vector<mpfr_class> & in){
 }
 #endif
 
-double BioGeoTree_copper::eval_likelihood(bool marginal){
+double BioGeoTree::eval_likelihood(bool marginal){
 	if( rootratemodel->sparse == true){
 		columns = new vector<int>(rootratemodel->getDists()->size());
 		whichcolumns = new vector<int>();
@@ -223,9 +223,9 @@ double BioGeoTree_copper::eval_likelihood(bool marginal){
 }
 
 #ifdef BIGTREE
-VectorNodeObject<mpfr_class> BioGeoTree_copper::conditionals(Node & node, bool marginal,bool sparse){
+VectorNodeObject<mpfr_class> BioGeoTree::conditionals(Node & node, bool marginal,bool sparse){
 #else
-VectorNodeObject<double> BioGeoTree_copper::conditionals(Node & node, bool marginal,bool sparse){
+VectorNodeObject<double> BioGeoTree::conditionals(Node & node, bool marginal,bool sparse){
 #endif
 #ifdef BIGTREE
 	VectorNodeObject<mpfr_class> distconds;
@@ -354,7 +354,7 @@ VectorNodeObject<double> BioGeoTree_copper::conditionals(Node & node, bool margi
 	return distconds;
 }
 
-void BioGeoTree_copper::ancdist_conditional_lh(Node & node, bool marginal){
+void BioGeoTree::ancdist_conditional_lh(Node & node, bool marginal){
 #ifdef BIGTREE
 	VectorNodeObject<mpfr_class> distconds(rootratemodel->getDists()->size(), 0);
 #else
@@ -469,7 +469,7 @@ void BioGeoTree_copper::ancdist_conditional_lh(Node & node, bool marginal){
  *
  * ********************************************
  */
-void BioGeoTree_copper::setFossilatNodeByMRCA(vector<string> nodeNames, int fossilarea){
+void BioGeoTree::setFossilatNodeByMRCA(vector<string> nodeNames, int fossilarea){
 	Node * mrca = tree->getMRCA(nodeNames);
 	vector<vector<int> > * dists = rootratemodel->getDists();
 	for(unsigned int i=0;i<dists->size();i++){
@@ -479,7 +479,7 @@ void BioGeoTree_copper::setFossilatNodeByMRCA(vector<string> nodeNames, int foss
 		}
 	}
 }
-void BioGeoTree_copper::setFossilatNodeByMRCA_id(Node * id, int fossilarea){
+void BioGeoTree::setFossilatNodeByMRCA_id(Node * id, int fossilarea){
 	vector<vector<int> > * dists = rootratemodel->getDists();
 	for(unsigned int i=0;i<dists->size();i++){
 		if(dists->at(i).at(fossilarea) == 0){
@@ -488,7 +488,7 @@ void BioGeoTree_copper::setFossilatNodeByMRCA_id(Node * id, int fossilarea){
 		}
 	}
 }
-void BioGeoTree_copper::setFossilatBranchByMRCA(vector<string> nodeNames, int fossilarea, double age){
+void BioGeoTree::setFossilatBranchByMRCA(vector<string> nodeNames, int fossilarea, double age){
 	Node * mrca = tree->getMRCA(nodeNames);
 	VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) mrca->getObject(seg));
 	double startage = mrca->getHeight();
@@ -499,7 +499,7 @@ void BioGeoTree_copper::setFossilatBranchByMRCA(vector<string> nodeNames, int fo
 		startage += tsegs->at(i).getDuration();
 	}
 }
-void BioGeoTree_copper::setFossilatBranchByMRCA_id(Node * id, int fossilarea, double age){
+void BioGeoTree::setFossilatBranchByMRCA_id(Node * id, int fossilarea, double age){
 	VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) id->getObject(seg));
 	double startage = id->getHeight();
 
@@ -516,14 +516,14 @@ void BioGeoTree_copper::setFossilatBranchByMRCA_id(Node * id, int fossilarea, do
  forward and reverse stuff for ancestral states
  ************************************************************/
 //add joint
-void BioGeoTree_copper::prepare_ancstate_reverse(){
+void BioGeoTree::prepare_ancstate_reverse(){
     reverse(*tree->getRoot());
 }
 
 /*
  * called from prepare_ancstate_reverse and that is all
  */
-void BioGeoTree_copper::reverse(Node & node){
+void BioGeoTree::reverse(Node & node){
 	rev = true;
 #ifdef BIGTREE
 	VectorNodeObject<mpfr_class> * revconds = new VectorNodeObject<mpfr_class> (rootratemodel->getDists()->size(), 0);//need to delete this at some point
@@ -643,7 +643,7 @@ void BioGeoTree_copper::reverse(Node & node){
  * calculates the most likely split (not state) -- the traditional result for lagrange
  */
 
-map<vector<int>,vector<AncSplit> > BioGeoTree_copper::calculate_ancsplit_reverse(Node & node,bool marg){
+map<vector<int>,vector<AncSplit> > BioGeoTree::calculate_ancsplit_reverse(Node & node,bool marg){
 #ifdef BIGTREE
 	VectorNodeObject<mpfr_class> * Bs = (VectorNodeObject<mpfr_class> *) node.getObject(revB);
 #else
@@ -686,9 +686,9 @@ map<vector<int>,vector<AncSplit> > BioGeoTree_copper::calculate_ancsplit_reverse
  * calculates the ancestral area over all the possible splits
  */
 #ifdef BIGTREE
-vector<mpfr_class> BioGeoTree_copper::calculate_ancstate_reverse(Node & node,bool marg)
+vector<mpfr_class> BioGeoTree::calculate_ancstate_reverse(Node & node,bool marg)
 #else
-vector<double> BioGeoTree_copper::calculate_ancstate_reverse(Node & node,bool marg)
+vector<double> BioGeoTree::calculate_ancstate_reverse(Node & node,bool marg)
 #endif
 	{
 	if (node.isExternal()==false){//is not a tip
@@ -739,7 +739,7 @@ vector<double> BioGeoTree_copper::calculate_ancstate_reverse(Node & node,bool ma
  * forward and reverse stuff for stochastic mapping
  **********************************************************/
 
-void BioGeoTree_copper::prepare_stochmap_reverse_all_nodes(int from , int to){
+void BioGeoTree::prepare_stochmap_reverse_all_nodes(int from , int to){
 	stochastic = true;
 	int ndists = rootratemodel->getDists()->size();
 
@@ -800,9 +800,9 @@ void BioGeoTree_copper::prepare_stochmap_reverse_all_nodes(int from , int to){
  */
 
 #ifdef BIGTREE
-vector<mpfr_class> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool time)
+vector<mpfr_class> BioGeoTree::calculate_reverse_stochmap(Node & node,bool time)
 #else
-vector<double> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool time)
+vector<double> BioGeoTree::calculate_reverse_stochmap(Node & node,bool time)
 #endif
 {
 	if (node.isExternal()==false){//is not a tip
@@ -970,7 +970,7 @@ vector<double> BioGeoTree_copper::calculate_reverse_stochmap(Node & node,bool ti
 /**********************************************************
  * trash collection
  **********************************************************/
-BioGeoTree_copper::~BioGeoTree_copper(){
+BioGeoTree::~BioGeoTree(){
 	for(int i=0;i<tree->getNodeCount();i++){
 		VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) tree->getNode(i)->getObject(seg));
 		for(unsigned int j=0;j<tsegs->size();j++){

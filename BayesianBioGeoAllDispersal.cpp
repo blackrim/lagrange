@@ -23,14 +23,14 @@ using namespace std;
 #include <gsl/gsl_randist.h>
 
 #include "RateModel.h"
-#include "BioGeoTree_copper.h"
+#include "BioGeoTree.h"
 
 namespace {
 	inline double MIN(const double &a, const double &b)
 	{return b < a ? (b) : double(a);}
 }
 
-BayesianBioGeoAllDispersal::BayesianBioGeoAllDispersal(BioGeoTree_copper * intree,RateModel * inrm, bool marg, int gen):
+BayesianBioGeoAllDispersal::BayesianBioGeoAllDispersal(BioGeoTree * intree,RateModel * inrm, bool marg, int gen):
 	tree(intree),rm(inrm),gens(gen),marginal(marg){
 	int nareas = rm->get_num_areas();
 	nareas = rm->get_num_areas();

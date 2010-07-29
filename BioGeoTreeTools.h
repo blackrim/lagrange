@@ -5,8 +5,8 @@
  *      Author: smitty
  */
 
-#ifndef PHYLOTREE_COPPER_H_
-#define PHYLOTREE_COPPER_H_
+#ifndef PHYLOTREE_H_
+#define PHYLOTREE_H_
 
 #include <string>
 #include <map>
@@ -21,7 +21,7 @@ using namespace std;
 #include "gmpfrxx/gmpfrxx.h"
 #endif
 
-class BioGeoTreeTools_copper {
+class BioGeoTreeTools {
 public :
 	Tree * getTreeFromString(string treestring);
 	vector<Node *> getAncestors(Tree & tree, Node & node);

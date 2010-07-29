@@ -5,7 +5,7 @@
  *      Author: Stephen A. Smith
  */
 
-#include "BioGeoTreeTools_copper.h"
+#include "BioGeoTreeTools.h"
 #include "RateMatrixUtils.h"
 #include <iostream>
 #include <sstream>
@@ -26,12 +26,12 @@ using namespace std;
 #include "gmpfrxx/gmpfrxx.h"
 #endif
 
-Tree * BioGeoTreeTools_copper::getTreeFromString(string treestring){
+Tree * BioGeoTreeTools::getTreeFromString(string treestring){
 	TreeReader tr;
 	return tr.readTree(treestring);
 }
 
-vector<Node *> BioGeoTreeTools_copper::getAncestors(Tree & tree, Node & nodeId){
+vector<Node *> BioGeoTreeTools::getAncestors(Tree & tree, Node & nodeId){
 	vector<Node *> nodes;
 	Node * current = &nodeId;
 	while(current->hasParent()){
@@ -41,7 +41,7 @@ vector<Node *> BioGeoTreeTools_copper::getAncestors(Tree & tree, Node & nodeId){
 	return nodes;
 }
 
-void BioGeoTreeTools_copper::summarizeSplits(Node * node,map<vector<int>,vector<AncSplit> > & ans,map<int,string> &areanamemaprev, RateModel * rm){
+void BioGeoTreeTools::summarizeSplits(Node * node,map<vector<int>,vector<AncSplit> > & ans,map<int,string> &areanamemaprev, RateModel * rm){
 #ifdef BIGTREE
 	mpfr_class best = 0;
 	mpfr_class sum = 0;
@@ -140,9 +140,9 @@ void BioGeoTreeTools_copper::summarizeSplits(Node * node,map<vector<int>,vector<
 }
 
 #ifdef BIGTREE
-void BioGeoTreeTools_copper::summarizeAncState(Node * node,vector<mpfr_class> & ans,map<int,string> &areanamemaprev, RateModel * rm)
+void BioGeoTreeTools::summarizeAncState(Node * node,vector<mpfr_class> & ans,map<int,string> &areanamemaprev, RateModel * rm)
 #else
-void BioGeoTreeTools_copper::summarizeAncState(Node * node,vector<double> & ans,map<int,string> &areanamemaprev, RateModel * rm)
+void BioGeoTreeTools::summarizeAncState(Node * node,vector<double> & ans,map<int,string> &areanamemaprev, RateModel * rm)
 #endif
 {
 #ifdef BIGTREE
@@ -204,7 +204,7 @@ void BioGeoTreeTools_copper::summarizeAncState(Node * node,vector<double> & ans,
 	//cout << -log(best) << " "<< best/sum << endl;	
 }
 
-string BioGeoTreeTools_copper::get_string_from_dist_int(int dist,map<int,string> &areanamemaprev, RateModel * rm){
+string BioGeoTreeTools::get_string_from_dist_int(int dist,map<int,string> &areanamemaprev, RateModel * rm){
 	map<int, vector<int> > * distmap = rm->get_int_dists_map();
 	vector<int> bestancdist = (*distmap)[dist];
 

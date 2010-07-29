@@ -23,14 +23,14 @@ using namespace std;
 #include <gsl/gsl_randist.h>
 
 #include "RateModel.h"
-#include "BioGeoTree_copper.h"
+#include "BioGeoTree.h"
 
 namespace {
 	inline double MIN(const double &a, const double &b)
 	{return b < a ? (b) : double(a);}
 }
 
-BayesianBioGeo::BayesianBioGeo(BioGeoTree_copper * intree,RateModel * inrm, bool marg, int gen):
+BayesianBioGeo::BayesianBioGeo(BioGeoTree * intree,RateModel * inrm, bool marg, int gen):
 	tree(intree),rm(inrm), gens(gen), marginal(marg){
 	gsl_rng_env_setup();
 	T = gsl_rng_default;

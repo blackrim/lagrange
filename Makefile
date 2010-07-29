@@ -2,14 +2,14 @@ RM := rm -rf
 
 CPP_SRCS += \
 ./AncSplit.cpp \
-./InputReader_copper.cpp \
+./InputReader.cpp \
 ./BayesianBioGeoAllDispersal.cpp \
 ./BayesianBioGeo.cpp \
-./BioGeoTree_copper.cpp \
-./BioGeoTreeTools_copper.cpp \
-./BranchSegment_copper.cpp \
-./OptimizeBioGeo_copper.cpp \
-./OptimizeBioGeoAllDispersal_copper.cpp \
+./BioGeoTree.cpp \
+./BioGeoTreeTools.cpp \
+./BranchSegment.cpp \
+./OptimizeBioGeo.cpp \
+./OptimizeBioGeoAllDispersal.cpp \
 ./RateMatrixUtils.cpp \
 ./RateModel.cpp \
 ./Utils.cpp \
@@ -17,18 +17,18 @@ CPP_SRCS += \
 ./tree.cpp \
 ./tree_reader.cpp \
 ./tree_utils.cpp \
-./main_copper.cpp
+./main.cpp
 
 OBJS += \
 ./AncSplit.o \
-./InputReader_copper.o \
+./InputReader.o \
 ./BayesianBioGeoAllDispersal.o \
 ./BayesianBioGeo.o \
-./BioGeoTree_copper.o \
-./BioGeoTreeTools_copper.o \
-./BranchSegment_copper.o \
-./OptimizeBioGeo_copper.o \
-./OptimizeBioGeoAllDispersal_copper.o \
+./BioGeoTree.o \
+./BioGeoTreeTools.o \
+./BranchSegment.o \
+./OptimizeBioGeo.o \
+./OptimizeBioGeoAllDispersal.o \
 ./RateMatrixUtils.o \
 ./RateModel.o \
 ./Utils.o \
@@ -36,16 +36,16 @@ OBJS += \
 ./tree.o \
 ./tree_reader.o \
 ./tree_utils.o \
-./main_copper.o
+./main.o
 
 CPP_DEPS += \
 ./AncSplit.d \
-./InputReader_copper.d \
+./InputReader.d \
 ./BayesianBioGeoAllDispersal.d \
 ./BayesianBioGeo.d \
-./BioGeoTree_copper.d \
-./BioGeoTreeTools_copper.d \
-./BranchSegment_copper.d \
+./BioGeoTree.d \
+./BioGeoTreeTools.d \
+./BranchSegment.d \
 ./OptimizeBioGeo.d \
 ./OptimizeBioGeoAllDispersal.d \
 ./RateMatrixUtils.d \
@@ -55,7 +55,7 @@ CPP_DEPS += \
 ./tree.d \
 ./tree_reader.d \
 ./tree_utils.d \
-./main_copper.d
+./main.d
 
 # uncomment if debugging
 # DEBUG = -DDEBUG
@@ -92,7 +92,6 @@ ifeq  ($(strip $(BIG)),yes)
 	BIGTREE += -DBIGTREE
 	TARGET_NAME = lagrange_cpp_bt
 	LIBS += -lgmp -lgmpxx -lmpfr -lgmpfrxx
-	
 endif
 
 
