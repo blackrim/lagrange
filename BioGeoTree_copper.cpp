@@ -8,7 +8,6 @@
 #include <string>
 #include <algorithm>
 #include <ctime>
-//#include <cmath>
 #include <functional>
 #include <numeric>
 #include <iostream>
