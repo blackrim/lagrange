@@ -660,17 +660,22 @@ map<vector<int>,vector<AncSplit> > BioGeoTree_copper::calculate_ancsplit_reverse
 			VectorNodeObject<BranchSegment>* tsegs1 = ((VectorNodeObject<BranchSegment>*) c1->getObject(seg));
 			VectorNodeObject<BranchSegment>* tsegs2 = ((VectorNodeObject<BranchSegment>*) c2->getObject(seg));
 			for (unsigned int i=0;i<ans.size();i++){
+				VectorNodeObject<vector<int> >* exdist =
+						((VectorNodeObject<vector<int> >*) node.getObject(en));
+				int cou = count(exdist->begin(), exdist->end(), (*rootratemodel->get_int_dists_map())[ans[i].ancdistint]);
+				if (cou == 0) {
 #ifdef BIGTREE
-				VectorNodeObject<mpfr_class> v1  =tsegs1->at(0).alphas;
-				VectorNodeObject<mpfr_class> v2 = tsegs2->at(0).alphas;
-				mpfr_class lh = (v1[ans[i].ldescdistint]*v2[ans[i].rdescdistint]*Bs->at(j)*ans[i].getWeight());
+					VectorNodeObject<mpfr_class> v1  =tsegs1->at(0).alphas;
+					VectorNodeObject<mpfr_class> v2 = tsegs2->at(0).alphas;
+					mpfr_class lh = (v1[ans[i].ldescdistint]*v2[ans[i].rdescdistint]*Bs->at(j)*ans[i].getWeight());
 #else
-				VectorNodeObject<double> v1  =tsegs1->at(0).alphas;
-				VectorNodeObject<double> v2 = tsegs2->at(0).alphas;
-				double lh = (v1[ans[i].ldescdistint]*v2[ans[i].rdescdistint]*Bs->at(j)*ans[i].getWeight());
+					VectorNodeObject<double> v1  =tsegs1->at(0).alphas;
+					VectorNodeObject<double> v2 = tsegs2->at(0).alphas;
+					double lh = (v1[ans[i].ldescdistint]*v2[ans[i].rdescdistint]*Bs->at(j)*ans[i].getWeight());
 #endif
-				ans[i].setLikelihood(lh);
-				//cout << lh << endl;
+					ans[i].setLikelihood(lh);
+					//cout << lh << endl;
+				}
 			}
 		}
 		ret[dist] = ans;
