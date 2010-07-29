@@ -10,26 +10,45 @@
 #include <limits>
 using namespace std;
 
-#include "OptimizeBioGeo_copper.h"
+#include "OptimizeBioGeoAllDispersal.h"
 #include "RateModel.h"
-#include "BioGeoTree_copper.h"
+#include "BioGeoTree.h"
 
 #include <gsl/gsl_multimin.h>
 #include <gsl/gsl_vector.h>
 
-OptimizeBioGeo::OptimizeBioGeo(BioGeoTree_copper * intree,RateModel * inrm, bool marg):
-	tree(intree), rm(inrm), maxiterations(100),stoppingprecision(0.0001),marginal(marg){}
+OptimizeBioGeoAllDispersal::OptimizeBioGeoAllDispersal(BioGeoTree * intree,RateModel * inrm, bool marg):
+	tree(intree),rm(inrm),maxiterations(10000),stoppingprecision(0.001),marginal(marg){
+	nareas = rm->get_num_areas();
+	vector<double> cols(nareas, 1);
+	vector< vector<double> > rows(nareas, cols);
+	D_mask = vector< vector< vector<double> > > (rm->get_num_periods(), rows);
+}
 
-double OptimizeBioGeo::GetLikelihoodWithOptimizedDispersalExtinction(const gsl_vector * variables)
-{
+double OptimizeBioGeoAllDispersal::GetLikelihoodWithOptimizedDispersalExtinction(const gsl_vector * variables){
 	double dispersal=gsl_vector_get(variables,0);
 	double extinction=gsl_vector_get(variables,1);
+	int count = 2;
+	for (unsigned int i=0;i<D_mask.size();i++){
+		for (unsigned int j=0;j<D_mask[i].size();j++){
+			D_mask[i][j][j] = 1.0;
+			for (unsigned int k=0;k<D_mask[i][j].size();k++){
+				if(k!=j){
+					D_mask[i][j][k] = gsl_vector_get(variables,count);
+					if(D_mask[i][j][k] <= 0){
+						return 100000000;
+					}
+					count += 1;
+				}
+			}
+		}
+	}
 	double like;
 	if(dispersal <= 0 || extinction <= 0)
 		return 100000000;
 	if(dispersal > 100 || extinction > 100)
 		return 100000000;
-	rm->setup_D(dispersal);
+	rm->setup_D_provided(dispersal,D_mask);
 	rm->setup_E(extinction);
 	rm->setup_Q();
 	tree->update_default_model(rm);
@@ -41,10 +60,9 @@ double OptimizeBioGeo::GetLikelihoodWithOptimizedDispersalExtinction(const gsl_v
 }
 
 
-double OptimizeBioGeo::GetLikelihoodWithOptimizedDispersalExtinction_gsl(const gsl_vector * variables, void *obj)
-{
+double OptimizeBioGeoAllDispersal::GetLikelihoodWithOptimizedDispersalExtinction_gsl(const gsl_vector * variables, void *obj){
 	double temp;
-	temp= ((OptimizeBioGeo*)obj)->GetLikelihoodWithOptimizedDispersalExtinction(variables);
+	temp= ((OptimizeBioGeoAllDispersal*)obj)->GetLikelihoodWithOptimizedDispersalExtinction(variables);
 	return temp;
 }
 
@@ -52,27 +70,28 @@ double OptimizeBioGeo::GetLikelihoodWithOptimizedDispersalExtinction_gsl(const g
  * USES THE SIMPLEX ALGORITHM
  *
  */
-vector<double> OptimizeBioGeo::optimize_global_dispersal_extinction(){
+vector<double> OptimizeBioGeoAllDispersal::optimize_global_dispersal_extinction(){
 	const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
 	gsl_multimin_fminimizer *s = NULL;
 	gsl_vector *ss, *x;
-	size_t np = 2;
+	size_t np = 2+(nareas*nareas*rm->get_num_periods())-nareas;
 	size_t iter = 0, i;
 	int status;
 	double size;
 	/* Initial vertex size vector */
 	ss = gsl_vector_alloc (np);
 	/* Set all step sizes to .01 */ //Note that it was originally 1
-	gsl_vector_set_all (ss, .01);
+	gsl_vector_set_all (ss, .1);
 	/* Starting point */
 	//cout<<"Now in OPtimizaRateWithGivenTipVariance in OptimizationFn"<<endl;
 	x = gsl_vector_alloc (np);
-	gsl_vector_set (x,0,0.01);
-	gsl_vector_set (x,1,0.01);
-	OptimizeBioGeo *pt;
+	for(int i=0;i<np;i++){
+		gsl_vector_set (x,i,0.01);
+	}
+	OptimizeBioGeoAllDispersal *pt;
 	pt=(this);
 	double (*F)(const gsl_vector *, void *);
-	F = &OptimizeBioGeo::GetLikelihoodWithOptimizedDispersalExtinction_gsl;
+	F = &OptimizeBioGeoAllDispersal::GetLikelihoodWithOptimizedDispersalExtinction_gsl;
 	/* Initialize method and iterate */
 	gsl_multimin_function minex_func;
 	minex_func.f=*F;
@@ -105,8 +124,11 @@ vector<double> OptimizeBioGeo::optimize_global_dispersal_extinction(){
 	}
 	while (status == GSL_CONTINUE && iter < maxiterations);
 	vector<double> results;
-	results.push_back(gsl_vector_get(s->x,0));
-	results.push_back(gsl_vector_get(s->x,1));
+	//results.push_back(gsl_vector_get(s->x,0));
+	//results.push_back(gsl_vector_get(s->x,1));
+	for(int i=0;i<np;i++){
+		results.push_back(gsl_vector_get(s->x,i));
+	}
 	gsl_vector_free(x);
 	gsl_vector_free(ss);
 	gsl_multimin_fminimizer_free (s);

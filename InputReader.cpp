@@ -12,8 +12,8 @@
 #include <iostream>
 using namespace std;
 
-#include "InputReader_copper.h"
-#include "BioGeoTreeTools_copper.h"
+#include "InputReader.h"
+#include "BioGeoTreeTools.h"
 #include "Utils.h"
 #include "RateMatrixUtils.h"
 

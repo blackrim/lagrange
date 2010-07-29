@@ -26,8 +26,8 @@ using namespace std;
 
 #include "RateModel.h"
 #include "RateMatrixUtils.h"
-#include "BioGeoTree_copper.h"
-#include "BranchSegment_copper.h"
+#include "BioGeoTree.h"
+#include "BranchSegment.h"
 #include "node.h"
 #include "tree.h"
 
@@ -36,7 +36,7 @@ namespace {
 	{return b < a ? (b) : double(a);}
 }
 
-BayesianBioGeoStMapper::BayesianBioGeoStMapper(BioGeoTree_copper * inbgt, Tree * intr,
+BayesianBioGeoStMapper::BayesianBioGeoStMapper(BioGeoTree * inbgt, Tree * intr,
 		RateModel * inrm, bool marg, int gen){
 	gens = gen;
 	marginal = marg;

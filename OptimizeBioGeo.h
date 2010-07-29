@@ -11,14 +11,14 @@
 #include <vector>
 using namespace std;
 
-#include "BioGeoTree_copper.h"
+#include "BioGeoTree.h"
 #include "RateModel.h"
 
 #include <gsl/gsl_vector.h>
 
 class OptimizeBioGeo{
 	private:
-		BioGeoTree_copper * tree;
+		BioGeoTree * tree;
 		RateModel * rm;
 		int maxiterations;
 		double stoppingprecision;
@@ -27,7 +27,7 @@ class OptimizeBioGeo{
 		static double GetLikelihoodWithOptimizedDispersalExtinction_gsl(const gsl_vector * variables, void *obj);
 
 	public:
-		OptimizeBioGeo(BioGeoTree_copper * intree,RateModel * inrm, bool marg);
+		OptimizeBioGeo(BioGeoTree * intree,RateModel * inrm, bool marg);
 		vector<double> optimize_global_dispersal_extinction();
 
 

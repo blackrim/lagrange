@@ -6,7 +6,7 @@
  */
 
 
-#include "BranchSegment_copper.h"
+#include "BranchSegment.h"
 #include "RateModel.h"
 
 #include <vector>

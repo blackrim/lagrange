@@ -5,8 +5,8 @@
  *      Author: smitty
  */
 
-#ifndef BRANCHSEGMENT_COPPER_H_
-#define BRANCHSEGMENT_COPPER_H_
+#ifndef BRANCHSEGMENT_H_
+#define BRANCHSEGMENT_H_
 
 #include <vector>
 using namespace std;

@@ -5,8 +5,8 @@
  *      Author: Stephen A. Smith
  */
 
-#ifndef BIOGEOTREE_COPPER_H_
-#define BIOGEOTREE_COPPER_H_
+#ifndef BIOGEOTREE_H_
+#define BIOGEOTREE_H_
 
 #include <vector>
 #include <string>
@@ -15,7 +15,7 @@ using namespace std;
 
 #include "RateModel.h"
 #include "AncSplit.h"
-#include "BranchSegment_copper.h"
+#include "BranchSegment.h"
 
 #include "tree.h"
 #include "node.h"
@@ -31,7 +31,7 @@ using namespace arma;
 #include "gmpfrxx/gmpfrxx.h"
 #endif
 
-class BioGeoTree_copper{
+class BioGeoTree{
 private:
 	Tree * tree;
 	vector<double> periods;
@@ -72,7 +72,7 @@ private:
 	clock_t c6;
 
 public:
-	BioGeoTree_copper(Tree * tr, vector<double> ps);
+	BioGeoTree(Tree * tr, vector<double> ps);
 	void set_store_p_matrices(bool);
 	void set_use_stored_matrices(bool);
 	void set_default_model(RateModel * mod);
@@ -107,10 +107,10 @@ public:
 #else
 	vector<double> calculate_ancstate_reverse(Node & node,bool marg);
 #endif
-	~BioGeoTree_copper();
+	~BioGeoTree();
 	//need to override these at some point
-	BioGeoTree_copper(const BioGeoTree_copper &L);             // copy constructor
-    BioGeoTree_copper & operator=(const BioGeoTree_copper &L);
+	BioGeoTree(const BioGeoTree &L);             // copy constructor
+    BioGeoTree & operator=(const BioGeoTree &L);
 
 /*
  * for calculating forward and reverse for expected values (stochastic mapping)

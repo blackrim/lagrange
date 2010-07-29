@@ -18,14 +18,14 @@ using namespace std;
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#include "BioGeoTree_copper.h"
+#include "BioGeoTree.h"
 #include "node.h"
 #include "tree.h"
 #include "RateModel.h"
 
 class BayesianBioGeoStMapper{
 private:
-	BioGeoTree_copper * bgt;
+	BioGeoTree * bgt;
 	Tree * tree;
 	RateModel * rm;
 	int gens;
@@ -49,7 +49,7 @@ private:
 	int draw_new_state(int starting_state);
 	
 public:
-	BayesianBioGeoStMapper(BioGeoTree_copper * inbgt, Tree * intr,
+	BayesianBioGeoStMapper(BioGeoTree * inbgt, Tree * intr,
 			RateModel * inrm, bool marg, int gen);
 	void run_mappings();
 	

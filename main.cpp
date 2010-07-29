@@ -21,12 +21,12 @@
 using namespace std;
 
 #include "RateMatrixUtils.h"
-#include "BioGeoTreeTools_copper.h"
+#include "BioGeoTreeTools.h"
 #include "RateModel.h"
-#include "BioGeoTree_copper.h"
-#include "OptimizeBioGeo_copper.h"
-#include "OptimizeBioGeoAllDispersal_copper.h"
-#include "InputReader_copper.h"
+#include "BioGeoTree.h"
+#include "OptimizeBioGeo.h"
+#include "OptimizeBioGeoAllDispersal.h"
+#include "InputReader.h"
 #include "Utils.h"
 #include "BayesianBioGeo.h"
 #include "BayesianBioGeoAllDispersal.h"
@@ -80,7 +80,7 @@ int main(int argc, char* argv[]){
 		//estimating the dispersal mask
 		bool estimate_dispersal_mask = false;
 
-		BioGeoTreeTools_copper tt;
+		BioGeoTreeTools tt;
 
 		/*************
 		 * read the configuration file
@@ -376,7 +376,7 @@ int main(int argc, char* argv[]){
 		 * start calculating on all trees
 		 */
 		for(unsigned int i =0;i<intrees.size();i++){
-			BioGeoTree_copper bgt(intrees[i],periods);
+			BioGeoTree bgt(intrees[i],periods);
 			/*
 			 * record the mrcas
 			 */
