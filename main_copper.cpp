@@ -386,7 +386,11 @@ int main(int argc, char* argv[]){
                                 //records node by number, should maybe just point to node
 				mrcanodeint[(*it).first] = intrees[i]->getMRCA((*it).second);
                                 //tt.getLastCommonAncestor(*intrees[i],nodeIds);
-				cout << "Reading mrca: " << (*it).first << endl;
+				cout << "Reading mrca: " << (*it).first << " = ";
+				for (unsigned int k = 0;k < (*it).second.size(); k ++){
+					cout <<  (*it).second[k]<< " ";
+				}
+				cout <<endl;
 			}
 
 			/*
