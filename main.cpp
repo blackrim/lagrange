@@ -70,6 +70,7 @@ int main(int argc, char* argv[]){
 		bool states = false;
 		int numthreads = 0;
 		bool sparse = false;
+		bool bayesian = false;
 
 		/*
 		 * for stochastic mapping
@@ -269,6 +270,8 @@ int main(int argc, char* argv[]){
 							}dists.push_back(dist0);dists.push_back(dist1);
 							stochastic_number_from_tos.push_back(dists);
 						}
+					}else if (!strcmp(tokens[0].c_str(), "bayesian")){
+						bayesian = true;
 					}
 				}
 			}
