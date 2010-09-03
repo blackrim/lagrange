@@ -71,6 +71,7 @@ int main(int argc, char* argv[]){
 		int numthreads = 0;
 		bool sparse = false;
 		bool bayesian = false;
+		int numreps = 10000;
 
 		/*
 		 * for stochastic mapping
@@ -272,6 +273,9 @@ int main(int argc, char* argv[]){
 						}
 					}else if (!strcmp(tokens[0].c_str(), "bayesian")){
 						bayesian = true;
+						if(tokens.size() > 1){
+							numreps = atoi(tokens[1].c_str());
+						}
 					}
 				}
 			}
@@ -509,10 +513,12 @@ int main(int argc, char* argv[]){
 			/*
 			 * testing BAYESIAN
 			 */
-			//BayesianBioGeo bayes(&bgt,&rm,marginal,100000);
-			//bayes.run_global_dispersal_extinction();
-			//BayesianBioGeoAllDispersal bayes(&bgt,&rm,marginal,100000);
-			//bayes.run_global_dispersal_extinction();
+			if (bayesian == true){
+				BayesianBioGeo bayes(&bgt,&rm,marginal,numreps);
+				bayes.run_global_dispersal_extinction();
+				//BayesianBioGeoAllDispersal bayes(&bgt,&rm,marginal,numreps);
+				//bayes.run_global_dispersal_extinction();
+			}
 
 			/*
 			 * ancestral splits calculation
