@@ -126,8 +126,8 @@ void BayesianBioGeoAllDispersal::run_global_dispersal_extinction(){
 		/*
 		 * pick next params
 		 */
-		params[rot] = calculate_sliding(prevparams[rot],sliding[rot]);
-		//params[rot] = calculate_sliding_log(prevparams[rot],sliding[rot], &hastings);
+		//params[rot] = calculate_sliding(prevparams[rot],sliding[rot]);
+		params[rot] = calculate_sliding_log(prevparams[rot],sliding[rot], &hastings);
 		if(iter%10 == 0){
 			rot += 1;
 		}

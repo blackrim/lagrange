@@ -514,10 +514,10 @@ int main(int argc, char* argv[]){
 			 * testing BAYESIAN
 			 */
 			if (bayesian == true){
-				BayesianBioGeo bayes(&bgt,&rm,marginal,numreps);
-				bayes.run_global_dispersal_extinction();
-				//BayesianBioGeoAllDispersal bayes(&bgt,&rm,marginal,numreps);
+				//BayesianBioGeo bayes(&bgt,&rm,marginal,numreps);
 				//bayes.run_global_dispersal_extinction();
+				BayesianBioGeoAllDispersal bayes(&bgt,&rm,marginal,numreps);
+				bayes.run_global_dispersal_extinction();
 			}
 
 			/*
