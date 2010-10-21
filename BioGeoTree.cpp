@@ -616,7 +616,9 @@ void BioGeoTree::reverse(Node & node){
 				if(accumulate(dists->at(j).begin(), dists->at(j).end(), 0) > 0){
 					for (unsigned int i = 0; i < dists->size(); i++) {
 						if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
+							//cout << "here " << j << " " << i<< " " << node.getBL() << " " << ts <<" " << tsegs->size() << endl;
 							revconds->at(j) += tempmoveA[i]*((*p)[i][j]);//tempA needs to change each time
+							//cout << "and" << endl;
 							if(stochastic == true){
 								tempmoveAer[j] += tempmoveA[i]*(((*ER)(i,j)));
 								tempmoveAen[j] += tempmoveA[i]*(((*EN)(i,j)));

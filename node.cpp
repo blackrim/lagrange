@@ -242,8 +242,9 @@ int Node::getChildCount(){
 }
 
 void Node::assocObject(string name,NodeObject & obj){
-	if(assoc.count(name) > 0) //take this out if doesn't work
-		delete assoc[name];
+	//need to see why this doesn't work
+	//if(assoc.count(name) > 0) //take this out if doesn't work
+	//	delete assoc[name];
 	assoc[name] = obj.clone();
 }
 

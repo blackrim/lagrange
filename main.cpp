@@ -621,6 +621,7 @@ int main(int argc, char* argv[]){
 								//cout << calculate_vector_double_sum(rsm) / totlike << endl;
 								VectorNodeObject<double> stres(1);
 #ifdef BIGTREE
+								//sometimes gets underflow problems
 								stres[0] = calculate_vector_mpfr_class_double_sum(rsm) / totlike;
 #else
 								stres[0] = calculate_vector_double_sum(rsm) / totlike;
@@ -666,9 +667,9 @@ int main(int argc, char* argv[]){
 							}
 						}
 						//need to output object "stoch"
-						outStochTimeFile << intrees[i]->getRoot()->getNewickOBL("stoch") <<
-								tt.get_string_from_dist_int((*rm.get_dists_int_map())[stochastic_number_from_tos[k][0]],areanamemaprev,&rm)<< "->"
-								<< tt.get_string_from_dist_int((*rm.get_dists_int_map())[stochastic_number_from_tos[k][1]],areanamemaprev,&rm) << ";"<< endl;
+						outStochTimeFile << intrees[i]->getRoot()->getNewickOBL("stoch") <<";"<< endl;
+								//tt.get_string_from_dist_int((*rm.get_dists_int_map())[stochastic_number_from_tos[k][0]],areanamemaprev,&rm)<< "->"
+								//<< tt.get_string_from_dist_int((*rm.get_dists_int_map())[stochastic_number_from_tos[k][1]],areanamemaprev,&rm) << ";"<< endl;
 						outStochTimeFile.close();
 						for(int j=0;j<intrees[i]->getNodeCount();j++){
 							if (intrees[i]->getNode(j)->getObject("stoch")!= NULL)
