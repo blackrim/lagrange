@@ -16,7 +16,6 @@ using namespace std;
 #include "RateModel.h"
 #include "AncSplit.h"
 #include "BranchSegment.h"
-
 #include "tree.h"
 #include "node.h"
 #include "vector_node_object.h"
@@ -56,15 +55,15 @@ private:
 	string rev_exp_number;
 	string rev_exp_time;
 	bool stochastic;
-	//map of period int and then branch length double
+	//map of period int and then branch length Superdouble
 	map<int,map<double, mat > > stored_EN_matrices;
 	map<int,map<double, mat > > stored_ER_matrices;
 	//end mapping bits
 
 	//scaling for larger trees
-	double scale;
-	double totalscale;
-	double limit;
+	Superdouble scale;
+	Superdouble totalscale;
+	Superdouble limit;
 	bool run_with_scale;
 	void scale_node(VectorNodeObject<double> * conds);
 
@@ -84,13 +83,13 @@ public:
 	void set_use_stored_matrices(bool);
 	void set_default_model(RateModel * mod);
 	void update_default_model(RateModel * mod);
-	double eval_likelihood(bool marg);
+	Superdouble eval_likelihood(bool marg);
 	void set_excluded_dist(vector<int> ind,Node * node);
 	void set_tip_conditionals(map<string,vector<int> > distrib_data);
 #ifdef BIGTREE
 	VectorNodeObject<mpfr_class> conditionals(Node & node, bool marg, bool sparse);
 #else
-	VectorNodeObject<double> conditionals(Node & node, bool marg, bool sparse);
+	VectorNodeObject<Superdouble> conditionals(Node & node, bool marg, bool sparse);
 #endif
 	//void ancdist_conditional_lh(bpp::Node & node, bool marg);
 	void ancdist_conditional_lh(Node & node, bool marg);
@@ -112,7 +111,7 @@ public:
 #ifdef BIGTREE
 	vector<mpfr_class> calculate_ancstate_reverse(Node & node,bool marg);
 #else
-	vector<double> calculate_ancstate_reverse(Node & node,bool marg);
+	vector<Superdouble> calculate_ancstate_reverse(Node & node,bool marg);
 #endif
 	~BioGeoTree();
 	//need to override these at some point
@@ -126,23 +125,23 @@ public:
 #ifdef BIGTREE
 	vector<mpfr_class> calculate_reverse_stochmap(Node &, bool);
 #else
-	vector<double> calculate_reverse_stochmap(Node &, bool);
+	vector<Superdouble> calculate_reverse_stochmap(Node &, bool);
 #endif
-	vector<double> calculate_reverse_stochmap_TEST(Node & node,bool time);
+	vector<Superdouble> calculate_reverse_stochmap_TEST(Node & node,bool time);
 
 
 	//get the scale
-	double get_scale();
+	Superdouble get_scale();
 	//this should be in the form of the get_scale so (log(scale)*totalscale);
-	void set_scale(double sc, double tsc);
+	void set_scale(Superdouble sc, Superdouble tsc);
 	void set_run_with_scale(bool );
 
 /*
 	for timing things
  */
-	double ti;
-	double ti2;
-	double ti3;
+	Superdouble ti;
+	Superdouble ti2;
+	Superdouble ti3;
 };
 
 #endif /* BIOGEOTREE_H_ */

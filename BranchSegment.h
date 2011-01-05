@@ -12,9 +12,8 @@
 using namespace std;
 
 #include "RateModel.h"
-
 #include "vector_node_object.h"
-
+#include "superdouble.h"
 #ifdef BIGTREE
 #include "gmpfrxx/gmpfrxx.h"
 #endif
@@ -48,12 +47,12 @@ class BranchSegment{
 		VectorNodeObject<mpfr_class> seg_sp_stoch_map_revB_time;
 		VectorNodeObject<mpfr_class> seg_sp_stoch_map_revB_number;
 #else
-		VectorNodeObject<double> * distconds;
-		VectorNodeObject<double> alphas; // alpha for the entire branch -- stored in the 0th segment for anc calc
-		VectorNodeObject<double> seg_sp_alphas; // alpha for this specific segment, stored for the stoch map
-		VectorNodeObject<double> seg_sp_stoch_map_revB_time; //segment specific rev B, combining the tempA and the ENLT
-		VectorNodeObject<double> seg_sp_stoch_map_revB_number; //segment specific rev B, combining the tempA and the ENLT
-		VectorNodeObject<double> * ancdistconds;//for ancestral state reconstructions
+		VectorNodeObject<Superdouble> * distconds;
+		VectorNodeObject<Superdouble> alphas; // alpha for the entire branch -- stored in the 0th segment for anc calc
+		VectorNodeObject<Superdouble> seg_sp_alphas; // alpha for this specific segment, stored for the stoch map
+		VectorNodeObject<Superdouble> seg_sp_stoch_map_revB_time; //segment specific rev B, combining the tempA and the ENLT
+		VectorNodeObject<Superdouble> seg_sp_stoch_map_revB_number; //segment specific rev B, combining the tempA and the ENLT
+		VectorNodeObject<Superdouble> * ancdistconds;//for ancestral state reconstructions
 #endif
 };
 

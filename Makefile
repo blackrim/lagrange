@@ -17,6 +17,7 @@ CPP_SRCS += \
 ./tree.cpp \
 ./tree_reader.cpp \
 ./tree_utils.cpp \
+./superdouble.cpp \
 ./main.cpp
 
 OBJS += \
@@ -36,6 +37,7 @@ OBJS += \
 ./tree.o \
 ./tree_reader.o \
 ./tree_utils.o \
+./superdouble.o \
 ./main.o
 
 CPP_DEPS += \
@@ -55,6 +57,7 @@ CPP_DEPS += \
 ./tree.d \
 ./tree_reader.d \
 ./tree_utils.d \
+./superdouble.d \
 ./main.d
 
 # uncomment if debugging
@@ -79,7 +82,7 @@ C_OPT = -O3 -ftree-vectorize -ffast-math -g3
 # requires fortran, gsl, and pthread -- and -ldl -lutil -lpython2.6 are for python
 #-ldl -lutil -lpython2.6
 # if llapack lblas fail, try larmadillo
-LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread  
+LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread -fopenmp
 
 ###########
 # change to yes for bigtrees -- loses about 3x speed

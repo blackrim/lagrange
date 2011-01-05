@@ -13,7 +13,7 @@
 #include <vector>
 #include "AncSplit.h"
 using namespace std;
-
+#include "superdouble.h"
 #include "tree.h"
 #include "node.h"
 
@@ -30,7 +30,7 @@ public :
 #ifdef BIGTREE
 	void summarizeAncState(Node * node,vector<mpfr_class> & ans,map<int,string> &areanamemaprev, RateModel * rm);
 #else
-	void summarizeAncState(Node * node,vector<double> & ans,map<int,string> &areanamemaprev, RateModel * rm);
+	void summarizeAncState(Node * node,vector<Superdouble> & ans,map<int,string> &areanamemaprev, RateModel * rm);
 #endif
 	string get_string_from_dist_int(int dist,map<int,string> &areanamemaprev, RateModel * rm);
 };

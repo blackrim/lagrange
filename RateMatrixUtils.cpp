@@ -45,6 +45,15 @@ double calculate_vector_double_sum(vector<double> & in){
 	return sum;
 }
 
+Superdouble calculate_vector_Superdouble_sum(vector<Superdouble> & in){
+	Superdouble sum = 0;
+	for (unsigned int i=0;i<in.size();i++){
+		sum += in[i];
+		//cout << in[i] << " sum:" << sum << endl;
+	}
+	//cout << "endsum:" << sum << endl;
+	return sum;
+}
 
 
 /*
@@ -266,6 +275,24 @@ vector<int> get_columns_for_sparse(vector<double> & inc, RateModel * rm){
 	vector<int> ret(inc.size(),0);
 	for(unsigned int i=0;i<inc.size();i++){
 		if(inc[i] > 0.0000000001){
+			ret[i] = 1;
+			vector<int> dis = rm->getDists()->at(i);
+			for(unsigned int j=0;j<inc.size();j++){
+				vector<int> dis2 = rm->getDists()->at(j);
+				int sum =calculate_vector_int_sum_xor(dis,dis2);
+				if(sum == 1){
+					ret[j] = 1;
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+vector<int> get_columns_for_sparse(vector<Superdouble> & inc, RateModel * rm){
+	vector<int> ret(inc.size(),0);
+	for(unsigned int i=0;i<inc.size();i++){
+		if(inc[i] > Superdouble(0.0000000001)){
 			ret[i] = 1;
 			vector<int> dis = rm->getDists()->at(i);
 			for(unsigned int j=0;j<inc.size();j++){
