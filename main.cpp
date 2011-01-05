@@ -546,6 +546,7 @@ int main(int argc, char* argv[]){
 #else
 							vector<double> rast = bgt.calculate_ancstate_reverse(*intrees[i]->getInternalNode(j),marginal);
 							totlike = calculate_vector_double_sum(rast);
+							//cout << totlike << " "<< bgt.get_scale()<< endl;
 #endif
 							tt.summarizeAncState(intrees[i]->getInternalNode(j),rast,areanamemaprev,&rm);
 							cout << endl;

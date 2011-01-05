@@ -187,6 +187,8 @@ void BioGeoTreeTools::summarizeAncState(Node * node,vector<double> & ans,map<int
 #endif
 	for(pit=printstring.begin();pit != printstring.end();pit++){
 		cout << "\t" << (*pit).second << "\t" << (-(*pit).first)/sum << "\t(" << -log(-(*pit).first) << ")"<< endl;
+		//for precalculated log
+		//cout << "\t" << (*pit).second << "\t" << (-(*pit).first)/sum << "\t(" << (-(*pit).first) << ")"<< endl;
 	}
 	StringNodeObject disstring ="";
 	int  count = 0;

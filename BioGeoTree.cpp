@@ -57,8 +57,15 @@ BioGeoTree::BioGeoTree(Tree * tr, vector<double> ps):tree(tr),periods(ps),
 		distmap(NULL),store_p_matrices(false),use_stored_matrices(false),revB("revB"),
 		rev(false),rev_exp_number("rev_exp_number"),rev_exp_time("rev_exp_time"),
 		stochastic(false),stored_EN_matrices(map<int,map<double, mat > >()),
-		stored_ER_matrices(map<int,map<double, mat > >()){
+		stored_ER_matrices(map<int,map<double, mat > >()),scale(1.),totalscale(0),
+		limit(1e-200),run_with_scale(true){
 
+	//testing the scaling ability
+	scale = 1e+49;
+	limit = 1e-50;
+#ifdef BIGTREE
+	run_with_scale = false;
+#endif
 	/*
 	 * initialize each node with segments
 	 */
@@ -179,6 +186,23 @@ void BioGeoTree::set_tip_conditionals(map<string,vector<int> > distrib_data){
 	}
 }
 
+// testing scale
+// this is testing scaling internal nodes when they get too small
+void BioGeoTree::scale_node(VectorNodeObject<double> * conds){
+	bool min = false;
+	double num = *max_element(conds->begin(), conds->end());
+	//cout << "first: "<< num << endl;
+	if (num <= limit){
+		for(unsigned int i=0;i<conds->size();i++){
+			conds->at(i) = conds->at(i)*scale;
+
+		}
+		totalscale += 1;
+	}
+	//num = *max_element(conds->begin(), conds->end());
+	//cout << "second: "<< num << endl;
+}
+
 void BioGeoTree::set_excluded_dist(vector<int> ind,Node * node){
 	((VectorNodeObject<vector<int> >*) node->getObject(en))->push_back(ind);
 }
@@ -202,6 +226,8 @@ mpfr_class calculate_vector_mpfr_class_sum(vector<mpfr_class> & in){
 #endif
 
 double BioGeoTree::eval_likelihood(bool marginal){
+	//testing scale
+	totalscale = 0;
 	if( rootratemodel->sparse == true){
 		columns = new vector<int>(rootratemodel->getDists()->size());
 		whichcolumns = new vector<int>();
@@ -217,9 +243,30 @@ double BioGeoTree::eval_likelihood(bool marginal){
 	double x = f.get_d();
 	return x;
 #else
-	return (-log(calculate_vector_double_sum(*
-			(VectorNodeObject<double>*) tree->getRoot()->getObject(dc))));
+	//cout << calculate_vector_double_sum(*
+	//		(VectorNodeObject<double>*) tree->getRoot()->getObject(dc)) << endl;
+	//cout << (-(log(calculate_vector_double_sum(*
+	//		(VectorNodeObject<double>*) tree->getRoot()->getObject(dc))) - (log(scale)*totalscale)));
+	//exit(0);
+	return (-(log(calculate_vector_double_sum(*
+					(VectorNodeObject<double>*) tree->getRoot()->getObject(dc)))));
+	//return (-(log(calculate_vector_double_sum(*
+	//		(VectorNodeObject<double>*) tree->getRoot()->getObject(dc))) - (log(scale)*totalscale)));
+	//testing scaling
 #endif
+
+}
+
+double BioGeoTree::get_scale(){
+	return (log(scale)*totalscale);
+}
+
+void BioGeoTree::set_scale(double sc, double tsc){
+
+}
+
+void BioGeoTree::set_run_with_scale(bool bl){
+	run_with_scale = bl;
 }
 
 #ifdef BIGTREE
@@ -446,6 +493,11 @@ void BioGeoTree::ancdist_conditional_lh(Node & node, bool marginal){
 		VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) node.getObject(seg));
 		distconds = *tsegs->at(0).distconds;
 	}
+	//testing scale
+	//if (run_with_scale){
+	//	scale_node(&distconds);
+	//}
+	//testing scale
 	if(node.hasParent() == true){
 		VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) node.getObject(seg));
 		for(unsigned int i=0;i<distconds.size();i++){
@@ -457,6 +509,7 @@ void BioGeoTree::ancdist_conditional_lh(Node & node, bool marginal){
 			((VectorNodeObject<mpfr_class>*)node.getObject(dc))->at(i) = distconds.at(i);
 #else
 			((VectorNodeObject<double>*)node.getObject(dc))->at(i) = distconds.at(i);
+			//cout << distconds.at(i) << endl;
 #endif
 		}
 	}
