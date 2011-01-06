@@ -35,6 +35,9 @@ class Superdouble  {
 private:
 	long double mantissa;
 	int exponent;
+	bool stilldouble;
+	double upperlimit;
+	double lowerlimit;
 	void adjustDecimal();
 	friend ostream& operator<<(ostream& os, const Superdouble& x);
 	
