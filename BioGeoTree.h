@@ -26,9 +26,6 @@ using namespace arma;
 //octave usage
 //#include <octave/oct.h>
 
-#ifdef BIGTREE
-#include "gmpfrxx/gmpfrxx.h"
-#endif
 
 class BioGeoTree{
 private:
@@ -60,13 +57,6 @@ private:
 	map<int,map<double, mat > > stored_ER_matrices;
 	//end mapping bits
 
-	//scaling for larger trees
-	Superdouble scale;
-	Superdouble totalscale;
-	Superdouble limit;
-	bool run_with_scale;
-	void scale_node(VectorNodeObject<double> * conds);
-
 	/*
 	 * benchmark variables
 	 */
@@ -86,11 +76,7 @@ public:
 	Superdouble eval_likelihood(bool marg);
 	void set_excluded_dist(vector<int> ind,Node * node);
 	void set_tip_conditionals(map<string,vector<int> > distrib_data);
-#ifdef BIGTREE
-	VectorNodeObject<mpfr_class> conditionals(Node & node, bool marg, bool sparse);
-#else
 	VectorNodeObject<Superdouble> conditionals(Node & node, bool marg, bool sparse);
-#endif
 	//void ancdist_conditional_lh(bpp::Node & node, bool marg);
 	void ancdist_conditional_lh(Node & node, bool marg);
 
@@ -108,11 +94,7 @@ public:
 	void prepare_ancstate_reverse();
 	void reverse(Node &);
 	map<vector<int>,vector<AncSplit> > calculate_ancsplit_reverse(Node & node,bool marg);
-#ifdef BIGTREE
-	vector<mpfr_class> calculate_ancstate_reverse(Node & node,bool marg);
-#else
 	vector<Superdouble> calculate_ancstate_reverse(Node & node,bool marg);
-#endif
 	~BioGeoTree();
 	//need to override these at some point
 	BioGeoTree(const BioGeoTree &L);             // copy constructor
@@ -122,11 +104,7 @@ public:
  * for calculating forward and reverse for expected values (stochastic mapping)
  */
 	void prepare_stochmap_reverse_all_nodes(int, int);
-#ifdef BIGTREE
-	vector<mpfr_class> calculate_reverse_stochmap(Node &, bool);
-#else
 	vector<Superdouble> calculate_reverse_stochmap(Node &, bool);
-#endif
 	vector<Superdouble> calculate_reverse_stochmap_TEST(Node & node,bool time);
 
 

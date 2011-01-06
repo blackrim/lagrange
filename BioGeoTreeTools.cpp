@@ -43,15 +43,9 @@ vector<Node *> BioGeoTreeTools::getAncestors(Tree & tree, Node & nodeId){
 }
 
 void BioGeoTreeTools::summarizeSplits(Node * node,map<vector<int>,vector<AncSplit> > & ans,map<int,string> &areanamemaprev, RateModel * rm){
-#ifdef BIGTREE
-	mpfr_class best = 0;
-	mpfr_class sum = 0;
-	map<mpfr_class,string > printstring;
-#else
 	double best = 0;
 	double sum = 0;
 	map<double,string > printstring;
-#endif
 	int areasize = (*ans.begin()).first.size();
 	map<int, vector<int> > * distmap = rm->get_int_dists_map(); 
 	vector<int> bestldist;
@@ -106,11 +100,7 @@ void BioGeoTreeTools::summarizeSplits(Node * node,map<vector<int>,vector<AncSpli
 			}
 		}
 	}
-#ifdef BIGTREE
-	map<mpfr_class,string >::iterator pit;
-#else
  	map<double,string >::iterator pit;
-#endif
 	for(pit=printstring.begin();pit != printstring.end();pit++){
 		cout << "\t" << (*pit).second << "\t" << (-(*pit).first)/sum << "\t(" << -log(-(*pit).first) << ")"<< endl;
 	}
@@ -140,21 +130,11 @@ void BioGeoTreeTools::summarizeSplits(Node * node,map<vector<int>,vector<AncSpli
 	//cout << -log(best) << " "<< best/sum << endl;
 }
 
-#ifdef BIGTREE
-void BioGeoTreeTools::summarizeAncState(Node * node,vector<mpfr_class> & ans,map<int,string> &areanamemaprev, RateModel * rm)
-#else
-void BioGeoTreeTools::summarizeAncState(Node * node,vector<Superdouble> & ans,map<int,string> &areanamemaprev, RateModel * rm)
-#endif
-{
-#ifdef BIGTREE
-	mpfr_class best = 0;
-	mpfr_class sum = 0;
-	map<mpfr_class,string > printstring;
-#else
+
+void BioGeoTreeTools::summarizeAncState(Node * node,vector<Superdouble> & ans,map<int,string> &areanamemaprev, RateModel * rm){
 	Superdouble best(ans[1]);
 	Superdouble sum(0);
 	map<Superdouble,string > printstring;
-#endif
 	int areasize = rm->get_num_areas();
 	map<int, vector<int> > * distmap = rm->get_int_dists_map(); 
 	vector<int> bestancdist;
@@ -165,7 +145,8 @@ void BioGeoTreeTools::summarizeAncState(Node * node,vector<Superdouble> & ans,ma
 		}
 		sum += ans[i];
 	}
-	Superdouble test2 = 2;
+	Superdouble none(-1);
+	Superdouble test2(2);
 	for(unsigned int i=0;i<ans.size();i++){
 		if (((best.getLn())-(ans[i].getLn()) ) < test2){
 			string tdisstring ="";
@@ -182,19 +163,12 @@ void BioGeoTreeTools::summarizeAncState(Node * node,vector<Superdouble> & ans,ma
 			printstring[ans[i]] = tdisstring;
 		}
 	}
-#ifdef BIGTREE
-	map<mpfr_class,string >::iterator pit;
-#else
- 	map<Superdouble,string >::iterator pit;
-#endif
- 	Superdouble none(-1);
-	for(pit=printstring.begin();pit != printstring.end();pit++){
+
+ 	map<Superdouble,string >::reverse_iterator pit;
+	for(pit=printstring.rbegin();pit != printstring.rend();pit++){
 		Superdouble lnl(((*pit).first));
-		//lnl = lnl * none;
-		cout << lnl << " " << sum << " " << lnl/sum << endl;
+		//cout << lnl << endl;
 		cout << "\t" << (*pit).second << "\t" << lnl/sum << "\t(" << none*lnl.getLn() << ")"<< endl;
-		//for precalculated log
-		//cout << "\t" << (*pit).second << "\t" << (-(*pit).first)/sum << "\t(" << (-(*pit).first) << ")"<< endl;
 	}
 	StringNodeObject disstring ="";
 	int  count = 0;

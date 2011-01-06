@@ -541,19 +541,13 @@ int main(int argc, char* argv[]){
 						}
 						if(states){
 							cout << "Ancestral states for:\t" << intrees[i]->getInternalNode(j)->getNumber() <<endl;
-#ifdef BIGTREE
-							vector<mpfr_class> rast = bgt.calculate_ancstate_reverse(*intrees[i]->getInternalNode(j),marginal);
-							totlike = calculate_vector_mpfr_class_double_sum(rast);
-#else
 							vector<Superdouble> rast = bgt.calculate_ancstate_reverse(*intrees[i]->getInternalNode(j),marginal);
 							totlike = calculate_vector_Superdouble_sum(rast);
-							//cout << totlike << " "<< bgt.get_scale()<< endl;
-#endif
 							tt.summarizeAncState(intrees[i]->getInternalNode(j),rast,areanamemaprev,&rm);
 							cout << endl;
 
 						}
-						exit(0);
+						//exit(0);
 					}
 					/*
 					 * key file output
@@ -571,11 +565,7 @@ int main(int argc, char* argv[]){
 						}
 						if(states){
 							cout << "Ancestral states for: " << ancstates[j] <<endl;
-#ifdef BIGTREE
-							vector<mpfr_class> rast = bgt.calculate_ancstate_reverse(*mrcanodeint[ancstates[j]],marginal);
-#else
 							vector<Superdouble> rast = bgt.calculate_ancstate_reverse(*mrcanodeint[ancstates[j]],marginal);
-#endif
 							tt.summarizeAncState(mrcanodeint[ancstates[j]],rast,areanamemaprev,&rm);
 						}
 					}
@@ -615,20 +605,10 @@ int main(int argc, char* argv[]){
 						outStochTimeFile.open((treefile+".bgstochtime.tre").c_str(),ios::app );
 						for(int j=0;j<intrees[i]->getNodeCount();j++){
 							if(intrees[i]->getNode(j) != intrees[i]->getRoot()){
-#ifdef BIGTREE
-								//vector<mpfr_class> rsm = bgt.reverse_stochmap(*intrees[i]->getNode(j));
-								vector<mpfr_class> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),true);
-#else
 								vector<Superdouble> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),true);
-#endif
 								//cout << calculate_vector_double_sum(rsm) / totlike << endl;
 								VectorNodeObject<double> stres(1);
-#ifdef BIGTREE
-								//sometimes gets underflow problems
-								stres[0] = calculate_vector_mpfr_class_double_sum(rsm) / totlike;
-#else
 								stres[0] = calculate_vector_Superdouble_sum(rsm) / totlike;
-#endif
 								intrees[i]->getNode(j)->assocObject("stoch", stres);
 							}
 						}
@@ -653,19 +633,10 @@ int main(int argc, char* argv[]){
 						outStochTimeFile.open((treefile+".bgstochnumber.tre").c_str(),ios::app );
 						for(int j=0;j<intrees[i]->getNodeCount();j++){
 							if(intrees[i]->getNode(j) != intrees[i]->getRoot()){
-#ifdef BIGTREE
-								//vector<mpfr_class> rsm = bgt.reverse_stochmap(*intrees[i]->getNode(j));
-								vector<mpfr_class> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),false);
-#else
 								vector<Superdouble> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),false);
-#endif
 								//cout << calculate_vector_double_sum(rsm) / totlike << endl;
 								VectorNodeObject<double> stres(1);
-#ifdef BIGTREE
-								stres[0] = calculate_vector_mpfr_class_double_sum(rsm) / totlike;
-#else
 								stres[0] = calculate_vector_Superdouble_sum(rsm) / totlike;
-#endif
 								intrees[i]->getNode(j)->assocObject("stoch", stres);
 							}
 						}
