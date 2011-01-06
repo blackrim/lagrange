@@ -84,19 +84,6 @@ C_OPT = -O3 -ftree-vectorize -ffast-math -g3
 # if llapack lblas fail, try larmadillo
 LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread -fopenmp
 
-###########
-# change to yes for bigtrees -- loses about 3x speed
-# if 64 bit GSL try CPPFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" ./configure
-# need to install gmp (with ./configure --enable-cxx) and mpfr and gmpfrxx
-#######
-BIG = no
-BIGTREE =
-ifeq  ($(strip $(BIG)),yes)
-	BIGTREE += -DBIGTREE
-	TARGET_NAME = lagrange_cpp_bt
-	LIBS += -lgmp -lgmpxx -lmpfr -lgmpfrxx
-endif
-
 
 #######
 # FORTRAN BIT
@@ -123,7 +110,7 @@ FORT_OBJS += \
 	g++ $(DEBUG) $(BIGTREE) $(PYTHON_LIB) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 
 # link library locations
-LINK_LIB_DIRS = -L/usr/lib/ -L/usr/local/lib/ -L./gmpfrxx/
+LINK_LIB_DIRS = -L/usr/lib/ -L/usr/local/lib/
 
 # Tool invocations
 lagrange_cpp: $(OBJS) $(FORT_OBJS)

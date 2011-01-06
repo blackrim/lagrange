@@ -444,13 +444,13 @@ int main(int argc, char* argv[]){
 			 * initial likelihood calculation
 			 */
 			cout << "starting likelihood calculations" << endl;
-			cout << "initial -ln likelihood: " << bgt.eval_likelihood(marginal) <<endl;
+			cout << "initial -ln likelihood: " << double(bgt.eval_likelihood(marginal)) <<endl;
 
 
 			/*
 			 * optimize likelihood
 			 */
-			double nlnlike = 0;
+			Superdouble nlnlike = 0;
 			if(estimate_dispersal_mask == false){
 					cout << "Optimizing (simplex) -ln likelihood." << endl;
 					OptimizeBioGeo opt(&bgt,&rm,marginal);
@@ -461,7 +461,7 @@ int main(int argc, char* argv[]){
 					rm.setup_Q();
 					bgt.update_default_model(&rm);
 					bgt.set_store_p_matrices(true);
-					cout << "final -ln likelihood: "<< bgt.eval_likelihood(marginal) <<endl;
+					cout << "final -ln likelihood: "<< double(bgt.eval_likelihood(marginal)) <<endl;
 					bgt.set_store_p_matrices(false);
 			}else{//optimize all the dispersal matrix
 				cout << "Optimizing (simplex) -ln likelihood with all dispersal parameters free." << endl;
@@ -506,7 +506,7 @@ int main(int argc, char* argv[]){
 				bgt.update_default_model(&rm);
 				bgt.set_store_p_matrices(true);
 				nlnlike = bgt.eval_likelihood(marginal);
-				cout << "final -ln likelihood: "<< nlnlike <<endl;
+				cout << "final -ln likelihood: "<< double(nlnlike) <<endl;
 				bgt.set_store_p_matrices(false);
 			}
 

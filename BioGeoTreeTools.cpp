@@ -23,10 +23,6 @@ using namespace std;
 #include "vector_node_object.h"
 #include "string_node_object.h"
 
-#ifdef BIGTREE
-#include "gmpfrxx/gmpfrxx.h"
-#endif
-
 Tree * BioGeoTreeTools::getTreeFromString(string treestring){
 	TreeReader tr;
 	return tr.readTree(treestring);
@@ -43,18 +39,23 @@ vector<Node *> BioGeoTreeTools::getAncestors(Tree & tree, Node & nodeId){
 }
 
 void BioGeoTreeTools::summarizeSplits(Node * node,map<vector<int>,vector<AncSplit> > & ans,map<int,string> &areanamemaprev, RateModel * rm){
-	double best = 0;
-	double sum = 0;
-	map<double,string > printstring;
+	Superdouble best(0);
+	Superdouble sum(0);
+	map<Superdouble,string > printstring;
 	int areasize = (*ans.begin()).first.size();
 	map<int, vector<int> > * distmap = rm->get_int_dists_map(); 
 	vector<int> bestldist;
 	vector<int> bestrdist;
 	map<vector<int>,vector<AncSplit> >::iterator it;
+	bool first = true;
 	for(it=ans.begin();it!=ans.end();it++){
 		vector<int> dis = (*it).first;
 		vector<AncSplit> tans = (*it).second;
 		for (unsigned int i=0;i<tans.size();i++){
+			if (first == true){
+				first = false;
+				best = tans[i].getLikelihood();
+			}
 			if (tans[i].getLikelihood() > best){
 				best = tans[i].getLikelihood();
 				bestldist = (*distmap)[tans[i].ldescdistint];//tans[i].getLDescDist();
@@ -64,11 +65,12 @@ void BioGeoTreeTools::summarizeSplits(Node * node,map<vector<int>,vector<AncSpli
 			sum += tans[i].getLikelihood();
 		}
 	}
+	Superdouble test2(2);
 	for(it=ans.begin();it!=ans.end();it++){
 		vector<int> dis = (*it).first;
 		vector<AncSplit> tans = (*it).second;
 		for (unsigned int i=0;i<tans.size();i++){
-			if ((log(best)-log(tans[i].getLikelihood()) ) < 2){
+			if ((best.getLn()-(tans[i].getLikelihood().getLn())) < test2){
 				string tdisstring ="";
 				int  count1 = 0;
 				for(int m=0;m<areasize;
@@ -96,13 +98,15 @@ void BioGeoTreeTools::summarizeSplits(Node * node,map<vector<int>,vector<AncSpli
 						}
 					}
 				}
-				printstring[-tans[i].getLikelihood()] = tdisstring;
+				printstring[tans[i].getLikelihood()] = tdisstring;
 			}
 		}
 	}
- 	map<double,string >::iterator pit;
-	for(pit=printstring.begin();pit != printstring.end();pit++){
-		cout << "\t" << (*pit).second << "\t" << (-(*pit).first)/sum << "\t(" << -log(-(*pit).first) << ")"<< endl;
+	Superdouble none(-1);
+ 	map<Superdouble,string >::reverse_iterator pit;
+	for(pit=printstring.rbegin();pit != printstring.rend();pit++){
+		Superdouble lnl(((*pit).first));
+		cout << "\t" << (*pit).second << "\t" << double(lnl/sum) << "\t(" << double(none*lnl.getLn())<< ")"<< endl;
 	}
 	StringNodeObject disstring ="";
 	int  count = 0;
@@ -168,7 +172,7 @@ void BioGeoTreeTools::summarizeAncState(Node * node,vector<Superdouble> & ans,ma
 	for(pit=printstring.rbegin();pit != printstring.rend();pit++){
 		Superdouble lnl(((*pit).first));
 		//cout << lnl << endl;
-		cout << "\t" << (*pit).second << "\t" << lnl/sum << "\t(" << none*lnl.getLn() << ")"<< endl;
+		cout << "\t" << (*pit).second << "\t" << double(lnl/sum) << "\t(" << double(none*lnl.getLn()) << ")"<< endl;
 	}
 	StringNodeObject disstring ="";
 	int  count = 0;
