@@ -132,6 +132,8 @@ void Superdouble::operator += ( Superdouble  x)
 	if (mantissa!=0) {
 		int exponentdif=x.exponent-exponent;
 		mantissa=mantissa+(x.mantissa*(pow(10,exponentdif)));
+		//Superdouble pow10(1,exponentdif);
+		//mantissa = mantissa + (x.mantissa * pow10);
 		adjustDecimal();
 	}
 	else {

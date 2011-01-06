@@ -65,7 +65,7 @@ CPP_DEPS += \
 
 TARGET_NAME = lagrange_cpp
 #for cleaning use -Weffc++
-C_OPT = -O3 -ftree-vectorize -ffast-math -g3
+C_OPT = -O3 -ftree-vectorize -ffast-math -fopenmp -g3
 #C_OPT = -Wall -g
 
 # for reading web input files
