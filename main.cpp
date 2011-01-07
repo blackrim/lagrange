@@ -26,6 +26,7 @@ using namespace std;
 #include "BioGeoTree.h"
 #include "OptimizeBioGeo.h"
 #include "OptimizeBioGeoAllDispersal.h"
+#include "OptimizeBioGeoAllDispersal_nlopt.h"
 #include "InputReader.h"
 #include "Utils.h"
 #include "BayesianBioGeo.h"
@@ -465,8 +466,9 @@ int main(int argc, char* argv[]){
 					bgt.set_store_p_matrices(false);
 			}else{//optimize all the dispersal matrix
 				cout << "Optimizing (simplex) -ln likelihood with all dispersal parameters free." << endl;
-				OptimizeBioGeoAllDispersal opt(&bgt,&rm,marginal);
-				vector<double> disextrm  = opt.optimize_global_dispersal_extinction();
+				//OptimizeBioGeoAllDispersal opt(&bgt,&rm,marginal);
+				//vector<double> disextrm  = opt.optimize_global_dispersal_extinction();
+				vector<double> disextrm = optimize_dispersal_extinction_all_nlopt(&bgt,&rm);
 				cout << "dis: " << disextrm[0] << " ext: " << disextrm[1] << endl;
 				vector<double> cols(rm.get_num_areas(), 0);
 				vector< vector<double> > rows(rm.get_num_areas(), cols);

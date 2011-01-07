@@ -620,9 +620,9 @@ void BioGeoTree::prepare_stochmap_reverse_all_nodes(int from , int to){
 	int ndists = rootratemodel->getDists()->size();
 
 	//calculate and store local expectation matrix for each branch length
-#pragma omp parallel for ordered num_threads(8)
+//#pragma omp parallel for ordered num_threads(8)
 	for(int k = 0; k < tree->getNodeCount(); k++){
-		cout << k << " " << tree->getNodeCount() << endl;
+		//cout << k << " " << tree->getNodeCount() << endl;
 		VectorNodeObject<BranchSegment>* tsegs = ((VectorNodeObject<BranchSegment>*) tree->getNode(k)->getObject(seg));
 		for (unsigned int l = 0;l<tsegs->size();l++){
 			int per = (*tsegs)[l].getPeriod();
@@ -669,7 +669,9 @@ void BioGeoTree::prepare_stochmap_reverse_all_nodes(int from , int to){
 			}
 			stored_EN_matrices[per][dur] = (real(summed));
 			stored_ER_matrices[per][dur] = (real(summedR));
+			cout << real(summed) << endl;
 		}
+		exit(0);
 	}
 }
 

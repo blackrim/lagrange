@@ -10,6 +10,7 @@ CPP_SRCS += \
 ./BranchSegment.cpp \
 ./OptimizeBioGeo.cpp \
 ./OptimizeBioGeoAllDispersal.cpp \
+./OptimizeBioGeoAllDispersal_nlopt.cpp \
 ./RateMatrixUtils.cpp \
 ./RateModel.cpp \
 ./Utils.cpp \
@@ -30,6 +31,7 @@ OBJS += \
 ./BranchSegment.o \
 ./OptimizeBioGeo.o \
 ./OptimizeBioGeoAllDispersal.o \
+./OptimizeBioGeoAllDispersal_nlopt.o \
 ./RateMatrixUtils.o \
 ./RateModel.o \
 ./Utils.o \
@@ -50,6 +52,7 @@ CPP_DEPS += \
 ./BranchSegment.d \
 ./OptimizeBioGeo.d \
 ./OptimizeBioGeoAllDispersal.d \
+./OptimizeBioGeoAllDispersal_nlopt.d \
 ./RateMatrixUtils.d \
 ./RateModel.d \
 ./Utils.d \
@@ -82,7 +85,7 @@ C_OPT = -O3 -ftree-vectorize -ffast-math -fopenmp -g3
 # requires fortran, gsl, and pthread -- and -ldl -lutil -lpython2.6 are for python
 #-ldl -lutil -lpython2.6
 # if llapack lblas fail, try larmadillo
-LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread -fopenmp
+LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread -lnlopt -fopenmp
 
 
 #######

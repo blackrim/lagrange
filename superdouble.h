@@ -62,6 +62,7 @@ public:
 	int getExponent();
 	double getMantissa();
 	Superdouble getLn();
+	Superdouble abs();
 	void switch_sign();
 	
 	operator double() {return mantissa*pow(10,exponent);};

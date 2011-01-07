@@ -6,6 +6,7 @@
 #include <iostream>
 using namespace std;
 
+
 Superdouble::Superdouble(long double m, int e):stilldouble(false),upperlimit(1e+100),lowerlimit(1e-100){
 	mantissa=m;
 	exponent=e;
@@ -18,13 +19,11 @@ Superdouble::Superdouble(long double m, int e):stilldouble(false),upperlimit(1e+
 
 Superdouble::~Superdouble() {}
 
-int Superdouble::getExponent() 
-{
+int Superdouble::getExponent(){
 	return exponent;
 }
 
-double Superdouble::getMantissa()
-{
+double Superdouble::getMantissa(){
 	return mantissa;
 }
 
@@ -55,7 +54,7 @@ ostream& operator<<(ostream& os, const Superdouble& x)
 Superdouble Superdouble::operator * ( Superdouble  x){
 	Superdouble result(mantissa*x.mantissa,exponent+x.exponent);
 	if (result.stilldouble == true){
-		if (result.mantissa > upperlimit || result.mantissa < lowerlimit){
+		if (fabs(result.mantissa) > upperlimit || fabs(result.mantissa) < lowerlimit){
 			result.adjustDecimal();
 		}
 	}else{
@@ -67,7 +66,7 @@ Superdouble Superdouble::operator * ( Superdouble  x){
 Superdouble Superdouble::operator * ( double  x){
 	Superdouble result(mantissa*x,exponent);
 	if (result.stilldouble == true){
-		if (result.mantissa > upperlimit || result.mantissa < lowerlimit){
+		if (fabs(result.mantissa) > upperlimit || fabs(result.mantissa) < lowerlimit){
 			result.adjustDecimal();
 		}
 	}else{
@@ -76,12 +75,15 @@ Superdouble Superdouble::operator * ( double  x){
 	return result;
 }
 
+
+//add stilldouble
 Superdouble Superdouble::operator / ( Superdouble  x){
 	Superdouble result(mantissa/x.mantissa,exponent-x.exponent);
 	result.adjustDecimal();
 	return result;
 }
 
+//add stilldouble
 Superdouble Superdouble::operator + ( Superdouble  x){
 
 	//only tricky thing is converting them to same exponent
@@ -98,8 +100,8 @@ Superdouble Superdouble::operator + ( Superdouble  x){
 	}
 }
 
+//add stilldouble
 Superdouble Superdouble::operator - ( Superdouble  x){
-
 	//only tricky thing is converting them to same exponent
 	if (mantissa!=0) {
 		int exponentdif=x.exponent-exponent;
@@ -114,24 +116,26 @@ Superdouble Superdouble::operator - ( Superdouble  x){
 	}
 }
 
-
-
+//add stilldouble
 void Superdouble::operator ++ (){
 	mantissa++;
 	adjustDecimal();
 }
 
+//add stilldouble
 void Superdouble::operator -- (){
 	mantissa--;
 	adjustDecimal();
 }
 
+//add stilldouble
 void Superdouble::operator *= (Superdouble x){
 	mantissa*=x.mantissa;
 	exponent+=x.exponent;
 	adjustDecimal();
 }
 
+//add stilldouble
 void Superdouble::operator /= (Superdouble x){
 	mantissa/=x.mantissa;
 	exponent-=x.exponent;
@@ -140,11 +144,10 @@ void Superdouble::operator /= (Superdouble x){
 
 void Superdouble::operator += ( Superdouble  x){
 	//only tricky thing is converting them to same exponent
-
 	if (mantissa!=0) {
 		if (stilldouble == true && x.stilldouble == true){
 			mantissa += x.mantissa;
-			if (mantissa > upperlimit || mantissa < lowerlimit){
+			if (fabs(mantissa) > upperlimit || fabs(mantissa) < lowerlimit){
 				adjustDecimal();
 			}
 		}else{
@@ -164,8 +167,8 @@ void Superdouble::operator += ( Superdouble  x){
 	}
 }
 
-void Superdouble::operator -= ( Superdouble  x)
-{
+//add stilldouble
+void Superdouble::operator -= ( Superdouble  x){
 	//only tricky thing is converting them to same exponent
 	if (mantissa!=0) {
 		int exponentdif=x.exponent-exponent;
@@ -232,5 +235,16 @@ Superdouble Superdouble::getLn(){
 	Superdouble result(log(mantissa)+(1.0*(exponent))/log10(exp(1)),0);
 	result.adjustDecimal();
 	return result;
+}
+
+Superdouble Superdouble::abs(){
+	if (mantissa < 0){
+		Superdouble result(-mantissa,exponent);
+		return result;
+	}else{
+		Superdouble result(mantissa,exponent);
+		return result;
+	}
+
 }
 
