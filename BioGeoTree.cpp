@@ -45,7 +45,7 @@ BioGeoTree::BioGeoTree(Tree * tr, vector<double> ps):tree(tr),periods(ps),
 		andc("anc_dist_conditionals"),columns(NULL),whichcolumns(NULL),rootratemodel(NULL),
 		distmap(NULL),store_p_matrices(false),use_stored_matrices(false),revB("revB"),
 		rev(false),rev_exp_number("rev_exp_number"),rev_exp_time("rev_exp_time"),
-		stochastic(false),stored_EN_matrices(map<int,map<double, mat > >()),
+		stochastic(false),stored_EN_matrices(map<int,map<double, mat > >()),stored_EN_CX_matrices(map<int,map<double, cx_mat > >()),
 		stored_ER_matrices(map<int,map<double, mat > >()){
 
 	/*
@@ -511,6 +511,11 @@ void BioGeoTree::reverse(Node & node){
 				for(unsigned int j=0;j<dists->size();j++){tempmoveAen[j] = 0;}
 				EN = &stored_EN_matrices[tsegs->at(ts).getPeriod()][tsegs->at(ts).getDuration()];
 				ER = &stored_ER_matrices[tsegs->at(ts).getPeriod()][tsegs->at(ts).getDuration()];
+				cout << (*EN) << endl;
+				cx_mat * EN_CX = NULL;
+				EN_CX = &stored_EN_CX_matrices[tsegs->at(ts).getPeriod()][tsegs->at(ts).getDuration()];
+				cout << (*EN_CX) << endl;
+				exit(0);
 			}
 			for(unsigned int j=0;j < dists->size();j++){
 				if(accumulate(dists->at(j).begin(), dists->at(j).end(), 0) > 0){
@@ -668,7 +673,22 @@ void BioGeoTree::prepare_stochmap_reverse_all_nodes(int from , int to){
 				}
 			}
 			stored_EN_matrices[per][dur] = (real(summed));
+			stored_EN_CX_matrices[per][dur] = summed;
 			stored_ER_matrices[per][dur] = (real(summedR));
+			//for(int i=0;i<ndists;i++){
+			//	for (int j=0;j<ndists;j++){
+			//		if (real(summed(i,j)) < 0){
+			//			cout <<"N:" <<  summed << endl;
+			//			cout << endl;
+			//			exit(0);
+			//		}
+			//		if (real(summedR(i,j)) < 0){
+			//			cout <<"R:" << summedR << endl;
+			//			cout << endl;
+			//			exit(0);
+			//		}
+			//	}
+			//}
 		}
 	}
 }

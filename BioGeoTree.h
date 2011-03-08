@@ -54,6 +54,7 @@ private:
 	bool stochastic;
 	//map of period int and then branch length Superdouble
 	map<int,map<double, mat > > stored_EN_matrices;
+	map<int,map<double,cx_mat> > stored_EN_CX_matrices;
 	map<int,map<double, mat > > stored_ER_matrices;
 	//end mapping bits
 

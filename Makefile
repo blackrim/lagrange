@@ -1,5 +1,8 @@
 RM := rm -rf
 
+CC = g++
+#CC = icpc
+
 CPP_SRCS += \
 ./AncSplit.cpp \
 ./InputReader.cpp \
@@ -110,7 +113,8 @@ FORT_OBJS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ./%.cpp
-	g++ $(DEBUG) $(BIGTREE) $(PYTHON_LIB) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(CC) $(DEBUG) $(BIGTREE) $(PYTHON_LIB) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+
 
 # link library locations
 LINK_LIB_DIRS = -L/usr/lib/ -L/usr/local/lib/
@@ -118,7 +122,7 @@ LINK_LIB_DIRS = -L/usr/lib/ -L/usr/local/lib/
 # Tool invocations
 lagrange_cpp: $(OBJS) $(FORT_OBJS)
 	@echo 'Building target: $@'
-	g++ $(LINK_LIB_DIRS) $(PYTHON_REQ) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
+	$(CC) $(LINK_LIB_DIRS) $(PYTHON_REQ) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
 	@echo 'Finished building target: $(TARGET_NAME)'
 	@echo ' '
 
