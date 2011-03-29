@@ -274,11 +274,8 @@ void Node::deleteDoubleVector(string name){
 }
 
 
-void Node::assocSegVector(vector<BranchSegment> & obj){
+void Node::initSegVector(){
 	segs = new vector<BranchSegment> ();
-	for (unsigned int i=0;i<obj.size();i++){
-		segs->push_back(obj[i]);
-	}
 }
 
 vector<BranchSegment> * Node::getSegVector(){
@@ -286,9 +283,19 @@ vector<BranchSegment> * Node::getSegVector(){
 }
 
 void Node::deleteSegVector(){
-	if (segs->size() > 0 ){
-		delete segs;
-	}
+	delete segs;
+}
+
+void Node::initExclDistVector(){
+	excluded_dists = new vector<vector<int > > ();
+}
+
+vector<vector< int> > * Node::getExclDistVector(){
+	return excluded_dists;
+}
+
+void Node::deleteExclDistVector(){
+	delete excluded_dists;
 }
 
 /*

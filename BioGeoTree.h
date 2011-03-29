@@ -35,7 +35,6 @@ class BioGeoTree{
 private:
 	Tree * tree;
 	vector<double> periods;
-	string seg;
 	string age;
 	string dc;
 	string en;
@@ -60,13 +59,6 @@ private:
 	map<int,map<double, mat > > stored_EN_matrices;
 	map<int,map<double, mat > > stored_ER_matrices;
 	//end mapping bits
-
-	//scaling for larger trees
-	double scale;
-	double totalscale;
-	double limit;
-	bool run_with_scale;
-	void scale_node(VectorNodeObject<double> * conds);
 
 	/*
 	 * benchmark variables
@@ -130,12 +122,6 @@ public:
 #endif
 	vector<double> calculate_reverse_stochmap_TEST(Node & node,bool time);
 
-
-	//get the scale
-	double get_scale();
-	//this should be in the form of the get_scale so (log(scale)*totalscale);
-	void set_scale(double sc, double tsc);
-	void set_run_with_scale(bool );
 
 /*
 	for timing things

@@ -30,6 +30,7 @@ private:
 	map<string, vector<double> > assocDV;
 	string comment;
 	vector<BranchSegment> * segs;
+	vector< vector<int> > * excluded_dists;
 
 public:
 	Node();
@@ -65,9 +66,12 @@ public:
 	void assocDoubleVector(string name, vector<double> & obj);
 	vector<double> * getDoubleVector(string name);
 	void deleteDoubleVector(string name);
-	void assocSegVector(vector<BranchSegment> & obj);
+	void initSegVector();
 	vector<BranchSegment> * getSegVector();
 	void deleteSegVector();
+	void initExclDistVector();
+	vector<vector< int> > * getExclDistVector();
+	void deleteExclDistVector();
 	NodeObject * getObject(string name);
 
 };

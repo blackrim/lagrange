@@ -52,20 +52,13 @@ namespace {
  */
 
 BioGeoTree::BioGeoTree(Tree * tr, vector<double> ps):tree(tr),periods(ps),
-		seg("segments"),age("age"),dc("dist_conditionals"),en("excluded_dists"),
+		age("age"),dc("dist_conditionals"),en("excluded_dists"),
 		andc("anc_dist_conditionals"),columns(NULL),whichcolumns(NULL),rootratemodel(NULL),
 		distmap(NULL),store_p_matrices(false),use_stored_matrices(false),revB("revB"),
 		rev(false),rev_exp_number("rev_exp_number"),rev_exp_time("rev_exp_time"),
 		stochastic(false),stored_EN_matrices(map<int,map<double, mat > >()),
-		stored_ER_matrices(map<int,map<double, mat > >()),scale(1.),totalscale(0),
-		limit(1e-200),run_with_scale(true){
+		stored_ER_matrices(map<int,map<double, mat > >()){
 
-	//testing the scaling ability
-	scale = 1e+49;
-	limit = 1e-50;
-#ifdef BIGTREE
-	run_with_scale = false;
-#endif
 	/*
 	 * initialize each node with segments
 	 */
@@ -74,13 +67,13 @@ BioGeoTree::BioGeoTree(Tree * tr, vector<double> ps):tree(tr),periods(ps),
 		if(tree->getNode(i)->getBL()<0.000001)
 			tree->getNode(i)->setBL(0.000001);
 		//VectorNodeObject<BranchSegment> * segs = new VectorNodeObject<BranchSegment>();
-		vector<BranchSegment> segs;
 		//tree->getNode(i)->assocObject(seg,*segs);
-		tree->getNode(i)->assocSegVector(segs);
+		tree->getNode(i)->initSegVector();
 		//delete segs;
-		VectorNodeObject<vector<int> > * ens = new VectorNodeObject<vector<int> >();
-		tree->getNode(i)->assocObject(en,*ens);
-		delete ens;
+		//VectorNodeObject<vector<int> > * ens = new VectorNodeObject<vector<int> >();
+		//tree->getNode(i)->assocObject(en,*ens);
+		//delete ens;
+		tree->getNode(i)->initExclDistVector();
 	}
 	/*
 	 * initialize the actual branch segments for each node
@@ -199,25 +192,9 @@ void BioGeoTree::set_tip_conditionals(map<string,vector<int> > distrib_data){
 	}
 }
 
-// testing scale
-// this is testing scaling internal nodes when they get too small
-void BioGeoTree::scale_node(VectorNodeObject<double> * conds){
-	bool min = false;
-	double num = *max_element(conds->begin(), conds->end());
-	//cout << "first: "<< num << endl;
-	if (num <= limit){
-		for(unsigned int i=0;i<conds->size();i++){
-			conds->at(i) = conds->at(i)*scale;
-
-		}
-		totalscale += 1;
-	}
-	//num = *max_element(conds->begin(), conds->end());
-	//cout << "second: "<< num << endl;
-}
-
 void BioGeoTree::set_excluded_dist(vector<int> ind,Node * node){
-	((VectorNodeObject<vector<int> >*) node->getObject(en))->push_back(ind);
+	//((VectorNodeObject<vector<int> >*) node->getObject(en))->push_back(ind);
+	node->getExclDistVector()->push_back(ind);
 }
 
 /*
@@ -239,8 +216,6 @@ mpfr_class calculate_vector_mpfr_class_sum(vector<mpfr_class> & in){
 #endif
 
 double BioGeoTree::eval_likelihood(bool marginal){
-	//testing scale
-	totalscale = 0;
 	if( rootratemodel->sparse == true){
 		columns = new vector<int>(rootratemodel->getDists()->size());
 		whichcolumns = new vector<int>();
@@ -266,18 +241,6 @@ double BioGeoTree::eval_likelihood(bool marginal){
 
 }
 
-double BioGeoTree::get_scale(){
-	return (log(scale)*totalscale);
-}
-
-void BioGeoTree::set_scale(double sc, double tsc){
-
-}
-
-void BioGeoTree::set_run_with_scale(bool bl){
-	run_with_scale = bl;
-}
-
 #ifdef BIGTREE
 VectorNodeObject<mpfr_class> BioGeoTree::conditionals(Node & node, bool marginal,bool sparse){
 #else
@@ -300,7 +263,8 @@ vector<double> BioGeoTree::conditionals(Node & node, bool marginal,bool sparse){
 #ifdef BIGTREE
 		VectorNodeObject<mpfr_class> * v = new VectorNodeObject<mpfr_class> (rootratemodel->getDists()->size(), 0);
 #else
-		VectorNodeObject<double> * v = new VectorNodeObject<double> (rootratemodel->getDists()->size(), 0);
+		//VectorNodeObject<double> * v = new VectorNodeObject<double> (rootratemodel->getDists()->size(), 0);
+		vector<double> *v = new vector<double> (rootratemodel->getDists()->size(),0);
 #endif
 		vector<int> distrange;
 		if(tsegs->at(i).get_start_dist_int() != -666){
@@ -486,7 +450,8 @@ void BioGeoTree::ancdist_conditional_lh(Node & node, bool marginal){
 #else
 				double lh = 0.0;
 #endif
-				VectorNodeObject<vector<int> >* exdist = ((VectorNodeObject<vector<int> >*) node.getObject(en));
+				//VectorNodeObject<vector<int> >* exdist = ((VectorNodeObject<vector<int> >*) node.getObject(en));
+				vector<vector<int> > * exdist = node.getExclDistVector();
 				int cou = count(exdist->begin(),exdist->end(),dists->at(i));
 				if(cou == 0){
 					iter_ancsplits_just_int(rootratemodel,dists->at(i),leftdists,rightdists,weight);
@@ -547,7 +512,8 @@ void BioGeoTree::setFossilatNodeByMRCA(vector<string> nodeNames, int fossilarea)
 	vector<vector<int> > * dists = rootratemodel->getDists();
 	for(unsigned int i=0;i<dists->size();i++){
 		if(dists->at(i).at(fossilarea) == 0){
-			VectorNodeObject<vector<int> > * exd = ((VectorNodeObject<vector<int> > *) mrca->getObject(en));
+			//VectorNodeObject<vector<int> > * exd = ((VectorNodeObject<vector<int> > *) mrca->getObject(en));
+			vector<vector<int> > * exd = mrca->getExclDistVector();
 			exd->push_back(dists->at(i));
 		}
 	}
@@ -556,7 +522,8 @@ void BioGeoTree::setFossilatNodeByMRCA_id(Node * id, int fossilarea){
 	vector<vector<int> > * dists = rootratemodel->getDists();
 	for(unsigned int i=0;i<dists->size();i++){
 		if(dists->at(i).at(fossilarea) == 0){
-			VectorNodeObject<vector<int> > * exd = ((VectorNodeObject<vector<int> > *) id->getObject(en));
+			//VectorNodeObject<vector<int> > * exd = ((VectorNodeObject<vector<int> > *) id->getObject(en));
+			vector<vector<int> > * exd = id->getExclDistVector();
 			exd->push_back(dists->at(i));
 		}
 	}
@@ -652,7 +619,8 @@ void BioGeoTree::reverse(Node & node){
 #endif
 		for (unsigned int i = 0; i < dists->size(); i++) {
 			if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
-				VectorNodeObject<vector<int> >* exdist = ((VectorNodeObject<vector<int> >*) node.getObject(en));
+				//VectorNodeObject<vector<int> >* exdist = ((VectorNodeObject<vector<int> >*) node.getObject(en));
+				vector<vector<int> > * exdist = node.getExclDistVector();
 				int cou = count(exdist->begin(), exdist->end(), dists->at(i));
 				if (cou == 0) {
 					iter_ancsplits_just_int(rootratemodel, dists->at(i), leftdists, rightdists, weight);
@@ -750,8 +718,9 @@ map<vector<int>,vector<AncSplit> > BioGeoTree::calculate_ancsplit_reverse(Node &
 			//VectorNodeObject<BranchSegment>* tsegs2 = ((VectorNodeObject<BranchSegment>*) c2->getObject(seg));
 			vector<BranchSegment> * tsegs2 = c2->getSegVector();
 			for (unsigned int i=0;i<ans.size();i++){
-				VectorNodeObject<vector<int> >* exdist =
-						((VectorNodeObject<vector<int> >*) node.getObject(en));
+				//VectorNodeObject<vector<int> >* exdist =
+				//		((VectorNodeObject<vector<int> >*) node.getObject(en));
+				vector<vector<int> > * exdist = node.getExclDistVector();
 				int cou = count(exdist->begin(), exdist->end(), (*rootratemodel->get_int_dists_map())[ans[i].ancdistint]);
 				if (cou == 0) {
 #ifdef BIGTREE
@@ -815,8 +784,9 @@ vector<double> BioGeoTree::calculate_ancstate_reverse(Node & node,bool marg)
 #endif
 		for (unsigned int i = 0; i < dists->size(); i++) {
 			if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
-				VectorNodeObject<vector<int> >* exdist =
-				((VectorNodeObject<vector<int> >*) node.getObject(en));
+				//VectorNodeObject<vector<int> >* exdist =
+				//((VectorNodeObject<vector<int> >*) node.getObject(en));
+				vector<vector<int> > * exdist = node.getExclDistVector();
 				int cou = count(exdist->begin(), exdist->end(), dists->at(i));
 				if (cou == 0) {
 					iter_ancsplits_just_int(rootratemodel, dists->at(i),
@@ -948,8 +918,9 @@ vector<double> BioGeoTree::calculate_reverse_stochmap(Node & node,bool time)
 #endif
 				for (unsigned int i = 0; i < dists->size(); i++) {
 					if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
-						VectorNodeObject<vector<int> >* exdist =
-						((VectorNodeObject<vector<int> >*) node.getObject(en));
+						//VectorNodeObject<vector<int> >* exdist =
+						//((VectorNodeObject<vector<int> >*) node.getObject(en));
+						vector<vector<int> > * exdist = node.getExclDistVector();
 						int cou = count(exdist->begin(), exdist->end(), dists->at(i));
 						if (cou == 0) {
 							iter_ancsplits_just_int(rootratemodel, dists->at(i),
@@ -986,8 +957,9 @@ vector<double> BioGeoTree::calculate_reverse_stochmap(Node & node,bool time)
 #endif
 				for (unsigned int i = 0; i < dists->size(); i++) {
 					if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
-						VectorNodeObject<vector<int> >* exdist =
-								((VectorNodeObject<vector<int> >*) node.getObject(en));
+						//VectorNodeObject<vector<int> >* exdist =
+								//((VectorNodeObject<vector<int> >*) node.getObject(en));
+						vector<vector<int> > * exdist = node.getExclDistVector();
 						int cou = count(exdist->begin(), exdist->end(), dists->at(i));
 						if (cou == 0) {
 							LHOODS[i] = Bs.at(i) * (alphs[i] );//do i do this or do i do from i to j
@@ -1029,8 +1001,9 @@ vector<double> BioGeoTree::calculate_reverse_stochmap(Node & node,bool time)
 #endif
 				for (unsigned int i = 0; i < dists->size(); i++) {
 					if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
-						VectorNodeObject<vector<int> >* exdist =
-								((VectorNodeObject<vector<int> >*) node.getObject(en));
+						//VectorNodeObject<vector<int> >* exdist =
+								//((VectorNodeObject<vector<int> >*) node.getObject(en));
+						vector<vector<int> > * exdist = node.getExclDistVector();
 						int cou = count(exdist->begin(), exdist->end(), dists->at(i));
 						if (cou == 0) {
 							LHOODS[i] = Bs.at(i) * (tsegs->at(0).distconds->at(i) );
@@ -1060,8 +1033,9 @@ vector<double> BioGeoTree::calculate_reverse_stochmap(Node & node,bool time)
 #endif
 				for (unsigned int i = 0; i < dists->size(); i++) {
 					if (accumulate(dists->at(i).begin(), dists->at(i).end(), 0) > 0) {
-						VectorNodeObject<vector<int> >* exdist =
-								((VectorNodeObject<vector<int> >*) node.getObject(en));
+						//VectorNodeObject<vector<int> >* exdist =
+								//((VectorNodeObject<vector<int> >*) node.getObject(en));
+						vector<vector<int> > * exdist = node.getExclDistVector();
 						int cou = count(exdist->begin(), exdist->end(), dists->at(i));
 						if (cou == 0) {
 							LHOODS[i] = Bs.at(i) * (alphs[i]);
@@ -1088,8 +1062,8 @@ BioGeoTree::~BioGeoTree(){
 			delete tsegs->at(j).distconds;
 			delete tsegs->at(j).ancdistconds;
 		}
-		delete tree->getNode(i)->getObject(seg);
-		delete tree->getNode(i)->getObject(en);
+		//delete tree->getNode(i)->getObject(en);
+		tree->getNode(i)->deleteExclDistVector();
 		if(rev == true && tree->getNode(i)->isInternal()){
 			tree->getNode(i)->deleteDoubleVector(revB);
 		}
@@ -1099,5 +1073,6 @@ BioGeoTree::~BioGeoTree(){
 	//delete tree->getRoot()->getObject(andc);
 	tree->getRoot()->deleteDoubleVector(dc);
 	tree->getRoot()->deleteDoubleVector(andc);
+	tree->getRoot()->deleteDoubleVector(revB);
 }
 
