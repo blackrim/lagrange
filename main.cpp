@@ -352,6 +352,9 @@ int main(int argc, char* argv[]){
 				}
 			}
 		}
+		/*
+		  need to add check to make sure that the tips are included in possible distributions
+		*/
 		if(includedists.size() > 0 || excludedists.size() > 0 || maxareas >= 2){
 			if(excludedists.size() > 0){
 				rm.setup_dists(excludedists,false);

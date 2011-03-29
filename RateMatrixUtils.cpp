@@ -101,6 +101,14 @@ int get_vector_int_index_from_multi_vector_int(vector<int> * in, vector<vector<i
 			break;
 		}
 	}
+	string dstring;
+	for (unsigned int j=0;j<in->size();j++){
+	  stringstream ss;
+	  ss << in->at(j);
+	  dstring.append(ss.str());
+	}
+	cout << "the distribution " << dstring << " is not included in the possible distributions" << endl;
+	exit(0);
 	return NULL;
 }
 
