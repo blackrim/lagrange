@@ -18,8 +18,8 @@ public:
 
 	virtual ~NodeObject() {}
 
-public:
 	virtual NodeObject * clone() const = 0;
+	virtual string type() {return "base";}
 };
 
 #endif /* NODE_OBJECT_H_ */

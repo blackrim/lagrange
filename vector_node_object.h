@@ -24,11 +24,15 @@ public:
 	VectorNodeObject(typename vector<T>::iterator start, typename vector<T>::iterator end):
 		vector<T>(start, end) {}
 
-	virtual ~VectorNodeObject() {}
-
-public:
+	virtual ~VectorNodeObject()
+		  {}
+	
+	virtual string type() const{
+		return "vector";
+	}
 
 	VectorNodeObject<T> * clone() const { return new VectorNodeObject<T>(*this); }
 };
+
 
 #endif /* NODE_OBJECT_H_ */

@@ -685,10 +685,11 @@ int main(int argc, char* argv[]){
 				 * end stochastic mapping
 				 */
 			}
+			//need to delete the biogeostuff
+		       
 		}
-		
 		for(unsigned int i=0;i<intrees.size();i++){
-			delete intrees[i];
+		  delete intrees[i];
 		}
 	}
 	return 0;

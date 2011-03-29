@@ -90,7 +90,7 @@ public:
 #ifdef BIGTREE
 	VectorNodeObject<mpfr_class> conditionals(Node & node, bool marg, bool sparse);
 #else
-	VectorNodeObject<double> conditionals(Node & node, bool marg, bool sparse);
+	vector<double> conditionals(Node & node, bool marg, bool sparse);
 #endif
 	//void ancdist_conditional_lh(bpp::Node & node, bool marg);
 	void ancdist_conditional_lh(Node & node, bool marg);

@@ -48,12 +48,12 @@ class BranchSegment{
 		VectorNodeObject<mpfr_class> seg_sp_stoch_map_revB_time;
 		VectorNodeObject<mpfr_class> seg_sp_stoch_map_revB_number;
 #else
-		VectorNodeObject<double> * distconds;
-		VectorNodeObject<double> alphas; // alpha for the entire branch -- stored in the 0th segment for anc calc
-		VectorNodeObject<double> seg_sp_alphas; // alpha for this specific segment, stored for the stoch map
-		VectorNodeObject<double> seg_sp_stoch_map_revB_time; //segment specific rev B, combining the tempA and the ENLT
-		VectorNodeObject<double> seg_sp_stoch_map_revB_number; //segment specific rev B, combining the tempA and the ENLT
-		VectorNodeObject<double> * ancdistconds;//for ancestral state reconstructions
+		vector<double> * distconds;
+		vector<double> alphas; // alpha for the entire branch -- stored in the 0th segment for anc calc
+		vector<double> seg_sp_alphas; // alpha for this specific segment, stored for the stoch map
+		vector<double> seg_sp_stoch_map_revB_time; //segment specific rev B, combining the tempA and the ENLT
+		vector<double> seg_sp_stoch_map_revB_number; //segment specific rev B, combining the tempA and the ENLT
+		vector<double> * ancdistconds;//for ancestral state reconstructions
 #endif
 };
 

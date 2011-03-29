@@ -15,6 +15,8 @@ using namespace std;
 
 
 #include "node_object.h"
+#include "vector_node_object.h"
+#include "BranchSegment.h"
 
 class Node{
 private:
@@ -25,7 +27,9 @@ private:
 	Node * parent;
 	vector<Node *> children;
 	map<string,NodeObject *> assoc;
+	map<string, vector<double> > assocDV;
 	string comment;
+	vector<BranchSegment> * segs;
 
 public:
 	Node();
@@ -58,6 +62,12 @@ public:
 	Node * getParent();
 	int getChildCount();
 	void assocObject(string name,NodeObject & obj);
+	void assocDoubleVector(string name, vector<double> & obj);
+	vector<double> * getDoubleVector(string name);
+	void deleteDoubleVector(string name);
+	void assocSegVector(vector<BranchSegment> & obj);
+	vector<BranchSegment> * getSegVector();
+	void deleteSegVector();
 	NodeObject * getObject(string name);
 
 };

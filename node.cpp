@@ -15,22 +15,25 @@
 using namespace std;
 
 #include "node.h"
+#include "BranchSegment.h"
 #include "node_object.h"
 #include "string_node_object.h"
 #include "vector_node_object.h"
 
 Node::Node():BL(0.0),height(0.0),number(0), name(""),
 		parent(NULL),children(vector<Node *> ()),assoc(map<string,NodeObject *>()),
-		comment(""){}
+		assocDV(map<string,vector<double> >()),comment(""){
+		}
 
 Node::Node(Node * inparent):BL(0.0),height(0.0),number(0), name(""),
 		parent(inparent),children(vector<Node *> ()),assoc(map<string,NodeObject *>()),
-		comment(""){}
+		assocDV(map<string,vector<double> >()),comment(""){
+		}
 
-Node::Node(double bl,int innumber,string inname, Node * inparent)
-:BL(bl),height(0.0),number(innumber), name(inname),
-parent(inparent),children(vector<Node *> ()),assoc(map<string,NodeObject *>()),
-comment(""){}
+Node::Node(double bl,int innumber,string inname, Node * inparent) :BL(bl),height(0.0),
+		number(innumber), name(inname),parent(inparent),children(vector<Node *> ()),
+		assoc(map<string,NodeObject *>()),assocDV(map<string,vector<double> >()),comment(""){
+		}
 
 vector<Node*> Node::getChildren(){
 	return children;
@@ -243,9 +246,49 @@ int Node::getChildCount(){
 
 void Node::assocObject(string name,NodeObject & obj){
 	//need to see why this doesn't work
-	//if(assoc.count(name) > 0) //take this out if doesn't work
-	//	delete assoc[name];
+  //if(assoc.count(name) > 0){ //take this out if doesn't work
+  //delete assoc[name];
+  //}
 	assoc[name] = obj.clone();
+}
+
+void Node::assocDoubleVector(string name, vector<double> & obj){
+	if (assocDV.count(name) > 0 ){
+		assocDV.erase(name);
+	}
+	vector<double> tvec (obj.size());
+	for (unsigned int i=0;i<obj.size();i++){
+		tvec[i] = obj[i];
+	}
+	assocDV[name] = tvec;
+}
+
+vector<double> * Node::getDoubleVector(string name){
+	return &assocDV[name];
+}
+
+void Node::deleteDoubleVector(string name){
+	if (assocDV.count(name) > 0 ){
+		assocDV.erase(name);
+	}
+}
+
+
+void Node::assocSegVector(vector<BranchSegment> & obj){
+	segs = new vector<BranchSegment> ();
+	for (unsigned int i=0;i<obj.size();i++){
+		segs->push_back(obj[i]);
+	}
+}
+
+vector<BranchSegment> * Node::getSegVector(){
+	return segs;
+}
+
+void Node::deleteSegVector(){
+	if (segs->size() > 0 ){
+		delete segs;
+	}
 }
 
 /*
