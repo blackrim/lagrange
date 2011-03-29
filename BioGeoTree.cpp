@@ -511,11 +511,11 @@ void BioGeoTree::reverse(Node & node){
 				for(unsigned int j=0;j<dists->size();j++){tempmoveAen[j] = 0;}
 				EN = &stored_EN_matrices[tsegs->at(ts).getPeriod()][tsegs->at(ts).getDuration()];
 				ER = &stored_ER_matrices[tsegs->at(ts).getPeriod()][tsegs->at(ts).getDuration()];
-				cout << (*EN) << endl;
+				//cout << (*EN) << endl;
 				cx_mat * EN_CX = NULL;
 				EN_CX = &stored_EN_CX_matrices[tsegs->at(ts).getPeriod()][tsegs->at(ts).getDuration()];
-				cout << (*EN_CX) << endl;
-				exit(0);
+				//cout << (*EN_CX) << endl;
+				//exit(0);
 			}
 			for(unsigned int j=0;j < dists->size();j++){
 				if(accumulate(dists->at(j).begin(), dists->at(j).end(), 0) > 0){
