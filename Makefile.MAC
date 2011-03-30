@@ -16,9 +16,9 @@ CPP_SRCS += \
 ./tree_reader.cpp \
 ./tree_utils.cpp \
 ./main.cpp \
-#./BayesianBioGeo.cpp \
-#./BayesianBioGeoAllDispersal.cpp \
-#./BayesianBioGeoStMapper.cpp
+./BayesianBioGeo.cpp \
+./BayesianBioGeoAllDispersal.cpp \
+./BayesianBioGeoStMapper.cpp
 
 OBJS += \
 ./AncSplit.o \
@@ -36,9 +36,9 @@ OBJS += \
 ./tree_reader.o \
 ./tree_utils.o \
 ./main.o \
-#./BayesianBioGeo.o \
-#./BayesianBioGeoAllDispersal.o \
-#./BayesianBioGeoStMapper.o
+./BayesianBioGeo.o \
+./BayesianBioGeoAllDispersal.o \
+./BayesianBioGeoStMapper.o
 
 CPP_DEPS += \
 ./AncSplit.d \
@@ -56,9 +56,9 @@ CPP_DEPS += \
 ./tree_reader.d \
 ./tree_utils.d \
 ./main.d \
-#./BayesianBioGeo.d \
-#./BayesianBioGeoAllDispersal.d \
-#./BayesianBioGeoStMapper.d
+./BayesianBioGeo.d \
+./BayesianBioGeoAllDispersal.d \
+./BayesianBioGeoStMapper.d
 
 #uncomment if debugging
 #DEBUG = -DDEBUG
