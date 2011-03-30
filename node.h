@@ -17,6 +17,7 @@ using namespace std;
 #include "node_object.h"
 #include "vector_node_object.h"
 #include "BranchSegment.h"
+#include "superdouble.h"
 
 class Node{
 private:
@@ -27,7 +28,7 @@ private:
 	Node * parent;
 	vector<Node *> children;
 	map<string,NodeObject *> assoc;
-	map<string, vector<double> > assocDV;
+	map<string, vector<Superdouble> > assocDV;
 	string comment;
 	vector<BranchSegment> * segs;
 	vector< vector<int> > * excluded_dists;
@@ -63,8 +64,8 @@ public:
 	Node * getParent();
 	int getChildCount();
 	void assocObject(string name,NodeObject & obj);
-	void assocDoubleVector(string name, vector<double> & obj);
-	vector<double> * getDoubleVector(string name);
+	void assocDoubleVector(string name, vector<Superdouble> & obj);
+	vector<Superdouble> * getDoubleVector(string name);
 	void deleteDoubleVector(string name);
 	void initSegVector();
 	vector<BranchSegment> * getSegVector();
