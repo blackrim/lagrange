@@ -16,7 +16,6 @@ using namespace std;
 #include "RateModel.h"
 #include "AncSplit.h"
 #include "BranchSegment.h"
-
 #include "tree.h"
 #include "node.h"
 #include "vector_node_object.h"
@@ -27,9 +26,6 @@ using namespace arma;
 //octave usage
 //#include <octave/oct.h>
 
-#ifdef BIGTREE
-#include "gmpfrxx/gmpfrxx.h"
-#endif
 
 class BioGeoTree{
 private:
@@ -55,8 +51,9 @@ private:
 	string rev_exp_number;
 	string rev_exp_time;
 	bool stochastic;
-	//map of period int and then branch length double
+	//map of period int and then branch length Superdouble
 	map<int,map<double, mat > > stored_EN_matrices;
+	map<int,map<double,cx_mat> > stored_EN_CX_matrices;
 	map<int,map<double, mat > > stored_ER_matrices;
 	//end mapping bits
 
@@ -76,14 +73,10 @@ public:
 	void set_use_stored_matrices(bool);
 	void set_default_model(RateModel * mod);
 	void update_default_model(RateModel * mod);
-	double eval_likelihood(bool marg);
+	Superdouble eval_likelihood(bool marg);
 	void set_excluded_dist(vector<int> ind,Node * node);
 	void set_tip_conditionals(map<string,vector<int> > distrib_data);
-#ifdef BIGTREE
-	VectorNodeObject<mpfr_class> conditionals(Node & node, bool marg, bool sparse);
-#else
-	vector<double> conditionals(Node & node, bool marg, bool sparse);
-#endif
+	vector<Superdouble> conditionals(Node & node, bool marg, bool sparse);
 	//void ancdist_conditional_lh(bpp::Node & node, bool marg);
 	void ancdist_conditional_lh(Node & node, bool marg);
 
@@ -101,11 +94,7 @@ public:
 	void prepare_ancstate_reverse();
 	void reverse(Node &);
 	map<vector<int>,vector<AncSplit> > calculate_ancsplit_reverse(Node & node,bool marg);
-#ifdef BIGTREE
-	vector<mpfr_class> calculate_ancstate_reverse(Node & node,bool marg);
-#else
-	vector<double> calculate_ancstate_reverse(Node & node,bool marg);
-#endif
+	vector<Superdouble> calculate_ancstate_reverse(Node & node,bool marg);
 	~BioGeoTree();
 	//need to override these at some point
 	BioGeoTree(const BioGeoTree &L);             // copy constructor
@@ -115,20 +104,16 @@ public:
  * for calculating forward and reverse for expected values (stochastic mapping)
  */
 	void prepare_stochmap_reverse_all_nodes(int, int);
-#ifdef BIGTREE
-	vector<mpfr_class> calculate_reverse_stochmap(Node &, bool);
-#else
-	vector<double> calculate_reverse_stochmap(Node &, bool);
-#endif
-	vector<double> calculate_reverse_stochmap_TEST(Node & node,bool time);
+	vector<Superdouble> calculate_reverse_stochmap(Node &, bool);
+	vector<Superdouble> calculate_reverse_stochmap_TEST(Node & node,bool time);
 
 
 /*
 	for timing things
  */
-	double ti;
-	double ti2;
-	double ti3;
+	Superdouble ti;
+	Superdouble ti2;
+	Superdouble ti3;
 };
 
 #endif /* BIOGEOTREE_H_ */

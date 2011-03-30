@@ -26,11 +26,13 @@ using namespace std;
 #include "BioGeoTree.h"
 #include "OptimizeBioGeo.h"
 #include "OptimizeBioGeoAllDispersal.h"
+#include "OptimizeBioGeoAllDispersal_nlopt.h"
 #include "InputReader.h"
 #include "Utils.h"
 #include "BayesianBioGeo.h"
 #include "BayesianBioGeoAllDispersal.h"
 #include "vector_node_object.h"
+#include "superdouble.h"
 
 #ifdef BIGTREE
 #include "gmpfrxx/gmpfrxx.h"
@@ -446,13 +448,13 @@ int main(int argc, char* argv[]){
 			 * initial likelihood calculation
 			 */
 			cout << "starting likelihood calculations" << endl;
-			cout << "initial -ln likelihood: " << bgt.eval_likelihood(marginal) <<endl;
+			cout << "initial -ln likelihood: " << double(bgt.eval_likelihood(marginal)) <<endl;
 
 
 			/*
 			 * optimize likelihood
 			 */
-			double nlnlike = 0;
+			Superdouble nlnlike = 0;
 			if(estimate_dispersal_mask == false){
 					cout << "Optimizing (simplex) -ln likelihood." << endl;
 					OptimizeBioGeo opt(&bgt,&rm,marginal);
@@ -463,12 +465,13 @@ int main(int argc, char* argv[]){
 					rm.setup_Q();
 					bgt.update_default_model(&rm);
 					bgt.set_store_p_matrices(true);
-					cout << "final -ln likelihood: "<< bgt.eval_likelihood(marginal) <<endl;
+					cout << "final -ln likelihood: "<< double(bgt.eval_likelihood(marginal)) <<endl;
 					bgt.set_store_p_matrices(false);
 			}else{//optimize all the dispersal matrix
 				cout << "Optimizing (simplex) -ln likelihood with all dispersal parameters free." << endl;
-				OptimizeBioGeoAllDispersal opt(&bgt,&rm,marginal);
-				vector<double> disextrm  = opt.optimize_global_dispersal_extinction();
+				//OptimizeBioGeoAllDispersal opt(&bgt,&rm,marginal);
+				//vector<double> disextrm  = opt.optimize_global_dispersal_extinction();
+				vector<double> disextrm = optimize_dispersal_extinction_all_nlopt(&bgt,&rm);
 				cout << "dis: " << disextrm[0] << " ext: " << disextrm[1] << endl;
 				vector<double> cols(rm.get_num_areas(), 0);
 				vector< vector<double> > rows(rm.get_num_areas(), cols);
@@ -508,7 +511,7 @@ int main(int argc, char* argv[]){
 				bgt.update_default_model(&rm);
 				bgt.set_store_p_matrices(true);
 				nlnlike = bgt.eval_likelihood(marginal);
-				cout << "final -ln likelihood: "<< nlnlike <<endl;
+				cout << "final -ln likelihood: "<< double(nlnlike) <<endl;
 				bgt.set_store_p_matrices(false);
 			}
 
@@ -530,7 +533,7 @@ int main(int argc, char* argv[]){
 				bgt.set_use_stored_matrices(true);
 
 				bgt.prepare_ancstate_reverse();
-				double totlike = 0; // calculate_vector_double_sum(rast) , should be the same for every node
+				Superdouble totlike = 0; // calculate_vector_double_sum(rast) , should be the same for every node
 
 				if(ancstates[0] == "_all_" || ancstates[0] == "_ALL_"){
 					for(int j=0;j<intrees[i]->getInternalNodeCount();j++){
@@ -543,18 +546,13 @@ int main(int argc, char* argv[]){
 						}
 						if(states){
 							cout << "Ancestral states for:\t" << intrees[i]->getInternalNode(j)->getNumber() <<endl;
-#ifdef BIGTREE
-							vector<mpfr_class> rast = bgt.calculate_ancstate_reverse(*intrees[i]->getInternalNode(j),marginal);
-							totlike = calculate_vector_mpfr_class_double_sum(rast);
-#else
-							vector<double> rast = bgt.calculate_ancstate_reverse(*intrees[i]->getInternalNode(j),marginal);
-							totlike = calculate_vector_double_sum(rast);
-							//cout << totlike << " "<< bgt.get_scale()<< endl;
-#endif
+							vector<Superdouble> rast = bgt.calculate_ancstate_reverse(*intrees[i]->getInternalNode(j),marginal);
+							totlike = calculate_vector_Superdouble_sum(rast);
 							tt.summarizeAncState(intrees[i]->getInternalNode(j),rast,areanamemaprev,&rm);
 							cout << endl;
 
 						}
+						//exit(0);
 					}
 					/*
 					 * key file output
@@ -572,11 +570,7 @@ int main(int argc, char* argv[]){
 						}
 						if(states){
 							cout << "Ancestral states for: " << ancstates[j] <<endl;
-#ifdef BIGTREE
-							vector<mpfr_class> rast = bgt.calculate_ancstate_reverse(*mrcanodeint[ancstates[j]],marginal);
-#else
-							vector<double> rast = bgt.calculate_ancstate_reverse(*mrcanodeint[ancstates[j]],marginal);
-#endif
+							vector<Superdouble> rast = bgt.calculate_ancstate_reverse(*mrcanodeint[ancstates[j]],marginal);
 							tt.summarizeAncState(mrcanodeint[ancstates[j]],rast,areanamemaprev,&rm);
 						}
 					}
@@ -616,20 +610,10 @@ int main(int argc, char* argv[]){
 						outStochTimeFile.open((treefile+".bgstochtime.tre").c_str(),ios::app );
 						for(int j=0;j<intrees[i]->getNodeCount();j++){
 							if(intrees[i]->getNode(j) != intrees[i]->getRoot()){
-#ifdef BIGTREE
-								//vector<mpfr_class> rsm = bgt.reverse_stochmap(*intrees[i]->getNode(j));
-								vector<mpfr_class> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),true);
-#else
-								vector<double> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),true);
-#endif
+								vector<Superdouble> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),true);
 								//cout << calculate_vector_double_sum(rsm) / totlike << endl;
 								VectorNodeObject<double> stres(1);
-#ifdef BIGTREE
-								//sometimes gets underflow problems
-								stres[0] = calculate_vector_mpfr_class_double_sum(rsm) / totlike;
-#else
-								stres[0] = calculate_vector_double_sum(rsm) / totlike;
-#endif
+								stres[0] = calculate_vector_Superdouble_sum(rsm) / totlike;
 								intrees[i]->getNode(j)->assocObject("stoch", stres);
 							}
 						}
@@ -654,19 +638,10 @@ int main(int argc, char* argv[]){
 						outStochTimeFile.open((treefile+".bgstochnumber.tre").c_str(),ios::app );
 						for(int j=0;j<intrees[i]->getNodeCount();j++){
 							if(intrees[i]->getNode(j) != intrees[i]->getRoot()){
-#ifdef BIGTREE
-								//vector<mpfr_class> rsm = bgt.reverse_stochmap(*intrees[i]->getNode(j));
-								vector<mpfr_class> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),false);
-#else
-								vector<double> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),false);
-#endif
+								vector<Superdouble> rsm = bgt.calculate_reverse_stochmap(*intrees[i]->getNode(j),false);
 								//cout << calculate_vector_double_sum(rsm) / totlike << endl;
 								VectorNodeObject<double> stres(1);
-#ifdef BIGTREE
-								stres[0] = calculate_vector_mpfr_class_double_sum(rsm) / totlike;
-#else
-								stres[0] = calculate_vector_double_sum(rsm) / totlike;
-#endif
+								stres[0] = calculate_vector_Superdouble_sum(rsm) / totlike;
 								intrees[i]->getNode(j)->assocObject("stoch", stres);
 							}
 						}

@@ -16,16 +16,13 @@
 
 #include "AncSplit.h"
 #include "RateModel.h"
-
+#include "superdouble.h"
 #include <vector>
 using namespace std;
 
-#ifdef BIGTREE
-#include "gmpfrxx/gmpfrxx.h"
-#endif
 
 
-AncSplit::AncSplit(RateModel * mod,int dist,int ldesc,int rdesc,double we):model(mod),weight(we),
+AncSplit::AncSplit(RateModel * mod,int dist,int ldesc,int rdesc,Superdouble we):model(mod),weight(we),
 		likelihood(0),ancdistint(dist),ldescdistint(ldesc),rdescdistint(rdesc){}
 
 RateModel * AncSplit::getModel(){
@@ -36,21 +33,10 @@ double AncSplit::getWeight(){
 	return weight;
 }
 
-
-#ifdef BIGTREE
-mpfr_class AncSplit::getLikelihood(){
+Superdouble AncSplit::getLikelihood(){
 	return likelihood;
 }
 
-void AncSplit::setLikelihood(mpfr_class li){
+void AncSplit::setLikelihood(Superdouble li){
 	likelihood = li;
 }
-#else
-double AncSplit::getLikelihood(){
-	return likelihood;
-}
-
-void AncSplit::setLikelihood(double li){
-	likelihood = li;
-}
-#endif

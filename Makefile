@@ -1,5 +1,8 @@
 RM := rm -rf
 
+CC = g++
+#CC = icpc
+
 CPP_SRCS += \
 ./AncSplit.cpp \
 ./InputReader.cpp \
@@ -10,6 +13,7 @@ CPP_SRCS += \
 ./BranchSegment.cpp \
 ./OptimizeBioGeo.cpp \
 ./OptimizeBioGeoAllDispersal.cpp \
+./OptimizeBioGeoAllDispersal_nlopt.cpp \
 ./RateMatrixUtils.cpp \
 ./RateModel.cpp \
 ./Utils.cpp \
@@ -17,6 +21,7 @@ CPP_SRCS += \
 ./tree.cpp \
 ./tree_reader.cpp \
 ./tree_utils.cpp \
+./superdouble.cpp \
 ./main.cpp
 
 OBJS += \
@@ -29,6 +34,7 @@ OBJS += \
 ./BranchSegment.o \
 ./OptimizeBioGeo.o \
 ./OptimizeBioGeoAllDispersal.o \
+./OptimizeBioGeoAllDispersal_nlopt.o \
 ./RateMatrixUtils.o \
 ./RateModel.o \
 ./Utils.o \
@@ -36,6 +42,7 @@ OBJS += \
 ./tree.o \
 ./tree_reader.o \
 ./tree_utils.o \
+./superdouble.o \
 ./main.o
 
 CPP_DEPS += \
@@ -48,6 +55,7 @@ CPP_DEPS += \
 ./BranchSegment.d \
 ./OptimizeBioGeo.d \
 ./OptimizeBioGeoAllDispersal.d \
+./OptimizeBioGeoAllDispersal_nlopt.d \
 ./RateMatrixUtils.d \
 ./RateModel.d \
 ./Utils.d \
@@ -55,6 +63,7 @@ CPP_DEPS += \
 ./tree.d \
 ./tree_reader.d \
 ./tree_utils.d \
+./superdouble.d \
 ./main.d
 
 # uncomment if debugging
@@ -62,7 +71,7 @@ CPP_DEPS += \
 
 TARGET_NAME = lagrange_cpp
 #for cleaning use -Weffc++
-C_OPT = -O3 -ftree-vectorize -ffast-math -g3
+C_OPT = -O3 -ftree-vectorize -ffast-math -fopenmp -g3
 #C_OPT = -Wall -g
 
 # for reading web input files
@@ -79,20 +88,7 @@ C_OPT = -O3 -ftree-vectorize -ffast-math -g3
 # requires fortran, gsl, and pthread -- and -ldl -lutil -lpython2.6 are for python
 #-ldl -lutil -lpython2.6
 # if llapack lblas fail, try larmadillo
-LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread  
-
-###########
-# change to yes for bigtrees -- loses about 3x speed
-# if 64 bit GSL try CPPFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" ./configure
-# need to install gmp (with ./configure --enable-cxx) and mpfr and gmpfrxx
-#######
-BIG = no
-BIGTREE =
-ifeq  ($(strip $(BIG)),yes)
-	BIGTREE += -DBIGTREE
-	TARGET_NAME = lagrange_cpp_bt
-	LIBS += -lgmp -lgmpxx -lmpfr -lgmpfrxx
-endif
+LIBS := -llapack -lblas -lgfortran -lgsl -lgslcblas -lm -lpthread -lnlopt -fopenmp
 
 
 #######
@@ -117,15 +113,16 @@ FORT_OBJS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ./%.cpp
-	g++ $(DEBUG) $(BIGTREE) $(PYTHON_LIB) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(CC) $(DEBUG) $(BIGTREE) $(PYTHON_LIB) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+
 
 # link library locations
-LINK_LIB_DIRS = -L/usr/lib/ -L/usr/local/lib/ -L./gmpfrxx/
+LINK_LIB_DIRS = -L/usr/lib/ -L/usr/local/lib/
 
 # Tool invocations
 lagrange_cpp: $(OBJS) $(FORT_OBJS)
 	@echo 'Building target: $@'
-	g++ $(LINK_LIB_DIRS) $(PYTHON_REQ) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
+	$(CC) $(LINK_LIB_DIRS) $(PYTHON_REQ) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
 	@echo 'Finished building target: $(TARGET_NAME)'
 	@echo ' '
 

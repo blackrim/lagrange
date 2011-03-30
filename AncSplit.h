@@ -20,33 +20,21 @@
 #include <vector>
 //using namespace std;
 
+#include "superdouble.h"
 #include "RateModel.h"
-
-#ifdef BIGTREE
-#include "gmpfrxx/gmpfrxx.h"
-#endif
 
 class AncSplit{
 	private:
 		RateModel * model;
 		double weight;
-#ifdef BIGTREE
-		mpfr_class likelihood;
-#else
-		double likelihood;
-#endif
+		Superdouble likelihood;
 
 	public:
-		AncSplit(RateModel * mod,int,int,int,double);
+		AncSplit(RateModel * mod,int,int,int,Superdouble);
 		RateModel * getModel();
 		double getWeight();
-#ifdef BIGTREE
-		mpfr_class getLikelihood();
-		void setLikelihood(mpfr_class li);
-#else
-		double getLikelihood();
-		void setLikelihood(double li);
-#endif
+		Superdouble getLikelihood();
+		void setLikelihood(Superdouble li);
 		int ancdistint;
 		int ldescdistint;
 		int rdescdistint;

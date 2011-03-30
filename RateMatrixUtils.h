@@ -15,6 +15,7 @@
 #include "RateModel.h"
 #include "AncSplit.h"
 #include <vector>
+#include "superdouble.h"
 using namespace std;
 
 #ifdef BIGTREE
@@ -32,6 +33,7 @@ using namespace std;
 double calculate_vector_mpfr_class_double_sum(vector<mpfr_class> & in);
 #endif
 double calculate_vector_double_sum(vector<double> & in);
+Superdouble calculate_vector_Superdouble_sum(vector<Superdouble> & in);
 int calculate_vector_int_sum(vector<int> * in);
 int get_vector_int_index_from_multi_vector_int(vector<int> * in, vector<vector<int> > * in2);
 
@@ -83,6 +85,7 @@ void convert_matrix_to_coo_for_fortran(vector<vector<double> > & inmatrix, doubl
 void convert_matrix_to_coo_for_fortran_vector(vector<vector<double> > & inmatrix, vector<int> & ia, vector<int> & ja, vector<double> & a);
 void convert_matrix_to_single_row_for_fortran(vector<vector<double> > & inmatrix, double t, double * H);
 vector<int> get_columns_for_sparse(vector<double> &,RateModel *);
+vector<int> get_columns_for_sparse(vector<Superdouble> &,RateModel *);
 
 /*
 	this is for pthread sparse columns
