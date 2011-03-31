@@ -16,7 +16,7 @@
 #include <cmath>
 using namespace std;
 
-
+#include "superdouble.h"
 #include "tree.h"
 #include "tree_reader.h"
 #include "node.h"

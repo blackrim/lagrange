@@ -17,7 +17,8 @@ CPP_SRCS += \
 ./tree_utils.cpp \
 ./main.cpp \
 ./BayesianBioGeo.cpp \
-./BayesianBioGeoAllDispersal.cpp 
+./BayesianBioGeoAllDispersal.cpp \
+./Superdouble.cpp
 
 OBJS += \
 ./AncSplit.o \
@@ -36,7 +37,8 @@ OBJS += \
 ./tree_utils.o \
 ./main.o \
 ./BayesianBioGeo.o \
-./BayesianBioGeoAllDispersal.o 
+./BayesianBioGeoAllDispersal.o \
+./Superdouble.o
 
 CPP_DEPS += \
 ./AncSplit.d \
@@ -55,7 +57,8 @@ CPP_DEPS += \
 ./tree_utils.d \
 ./main.d \
 ./BayesianBioGeo.d \
-./BayesianBioGeoAllDispersal.d 
+./BayesianBioGeoAllDispersal.d \
+./Superdouble.d
 
 #uncomment if debugging
 #DEBUG = -DDEBUG
