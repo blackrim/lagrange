@@ -71,15 +71,10 @@ CPP_DEPS += \
 
 TARGET_NAME = lagrange_cpp
 #for cleaning use -Weffc++
-C_OPT = -O3 -ftree-vectorize -ffast-math -fopenmp -g3
+#for openmp -fopenmp
+C_OPT = -O3 -ftree-vectorize -ffast-math -g3
 #C_OPT = -Wall -g
 
-# for reading web input files
-#PYTHON_LIB = -I/usr/include/python2.6/
-# output of 
-# >>> import distutils.sysconfig
-# >>> distutils.sysconfig.get_config_var('LINKFORSHARED')
-#PYTHON_REQ = -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
 
 #if using octave
 #INCLUDES = -I/usr/include/octave-3.0.5/octave/
@@ -113,7 +108,7 @@ FORT_OBJS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ./%.cpp
-	$(CC) $(DEBUG) $(BIGTREE) $(PYTHON_LIB) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(CC) $(DEBUG) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 
 
 # link library locations

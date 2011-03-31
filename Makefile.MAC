@@ -1,8 +1,13 @@
 RM := rm -rf
 
+CC = g++
+#CC = icpc
+
 CPP_SRCS += \
 ./AncSplit.cpp \
 ./InputReader.cpp \
+./BayesianBioGeoAllDispersal.cpp \
+./BayesianBioGeo.cpp \
 ./BioGeoTree.cpp \
 ./BioGeoTreeTools.cpp \
 ./BranchSegment.cpp \
@@ -16,14 +21,14 @@ CPP_SRCS += \
 ./tree.cpp \
 ./tree_reader.cpp \
 ./tree_utils.cpp \
-./main.cpp \
-./BayesianBioGeo.cpp \
-./BayesianBioGeoAllDispersal.cpp \
-./superdouble.cpp
+./superdouble.cpp \
+./main.cpp
 
 OBJS += \
 ./AncSplit.o \
 ./InputReader.o \
+./BayesianBioGeoAllDispersal.o \
+./BayesianBioGeo.o \
 ./BioGeoTree.o \
 ./BioGeoTreeTools.o \
 ./BranchSegment.o \
@@ -37,14 +42,14 @@ OBJS += \
 ./tree.o \
 ./tree_reader.o \
 ./tree_utils.o \
-./main.o \
-./BayesianBioGeo.o \
-./BayesianBioGeoAllDispersal.o \
-./superdouble.o
+./superdouble.o \
+./main.o
 
 CPP_DEPS += \
 ./AncSplit.d \
 ./InputReader.d \
+./BayesianBioGeoAllDispersal.d \
+./BayesianBioGeo.d \
 ./BioGeoTree.d \
 ./BioGeoTreeTools.d \
 ./BranchSegment.d \
@@ -58,54 +63,26 @@ CPP_DEPS += \
 ./tree.d \
 ./tree_reader.d \
 ./tree_utils.d \
-./main.d \
-./BayesianBioGeo.d \
-./BayesianBioGeoAllDispersal.d \
-./superdouble.d
+./superdouble.d \
+./main.d
 
-#uncomment if debugging
-#DEBUG = -DDEBUG
+# uncomment if debugging
+# DEBUG = -DDEBUG
 
 TARGET_NAME = lagrange_cpp
-
-C_OPT = -O3 -ftree-vectorize -ffast-math -Wall -g
-
-#probably don't need unless messed with code
-#LIBS := -lgfortran -lbpp-popgen -lbpp-phyl -lbpp-seq -lbpp-numcalc -lbpp-utils -lgsl -lgslcblas -lm -lpthread
-#BOOST_LIB = -I/Users/smitty/programming/LIBRARIES/boost_1_39_0
-
-#for reading web input files
-#PYTHON_LIB = -I/System/Library/Frameworks/Python.framework/Headers/
-#output of 
-#>>> import distutils.sysconfig
-#>>> distutils.sysconfig.get_config_var('LINKFORSHARED')
-#PYTHON_REQ = -u _PyMac_Error /System/Library/Frameworks/Python.framework/Versions/2.6/Python
+#for cleaning use -Weffc++
+#for openmp -fopenmp
+C_OPT = -O3 -ftree-vectorize -ffast-math -g3
+#C_OPT = -Wall -g
 
 
-# Each subdirectory must supply rules for building sources it contributes
-%.o: ./%.cpp
-	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
-	g++ $(DEBUG) $(BIGTREE) $(BOOST_LIB) $(PYTHON_LIB) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
+#if using octave
+#INCLUDES = -I/usr/include/octave-3.0.5/octave/
+#INCLUDES = -I/usr/include/octave-3.2.4/
 
 #requires fortran, bio++ libraries, gsl, and pthread
-LIBS := -lgfortran -lgsl -lgslcblas -lm -lpthread -framework Accelerate
+LIBS := -lgfortran -lgsl -lgslcblas -lm -lpthread -framework Accelerate -lnlopt
 
-###########
-# change to yes for bigtrees -- loses about 3x speed
-# if 64 bit GSL try CPPFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" ./configure
-# need to install gmp (with ./configure --enable-cxx) and mpfr and gmpfrxx
-#######
-BIG = no
-BIGTREE =
-ifeq  ($(strip $(BIG)),yes)
-	BIGTREE += -DBIGTREE
-	TARGET_NAME = lagrange_cpp_bt
-	LIBS += -lgmp -lgmpxx -lmpfr -lgmpfrxx
-	
-endif
 
 
 #######
@@ -117,11 +94,7 @@ FFLAGS	= -O3
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ./%.f
-	@echo 'Building file: $<'
-	@echo 'Invoking: g77 Fortran Compiler'
 	$(FC) $(FFLAGS) -c $<
-	@echo 'Finished building: $<'
-	@echo ' '
 
 FORT_OBJS += \
 ./clock.o \
@@ -131,8 +104,10 @@ FORT_OBJS += \
 ./lapack.o \
 ./my_matexp.o
 
-# All Target
-all: lagrange_cpp
+
+# Each subdirectory must supply rules for building sources it contributes
+%.o: ./%.cpp
+	$(CC) $(DEBUG) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 
 #link library locations
 LINK_LIB_DIRS = -L/usr/local/lib/ -L/usr/lib/ -L./gmpfrxx/
@@ -140,12 +115,21 @@ LINK_LIB_DIRS = -L/usr/local/lib/ -L/usr/lib/ -L./gmpfrxx/
 # Tool invocations
 lagrange_cpp: $(OBJS) $(FORT_OBJS)
 	@echo 'Building target: $@'
-	#@echo 'Invoking: MacOS X C++ Linker'
-	g++ $(LINK_LIB_DIRS) $(PYTHON_REQ) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
+	$(CC) $(LINK_LIB_DIRS) $(PYTHON_REQ) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
 	@echo 'Finished building target: $(TARGET_NAME)'
 	@echo ' '
 
+#oct: $(OBJS) $(FORT_OBJS)
+#	@echo 'Building target: $@'
+#	mkoctfile --link-stand-alone $(LINK_LIB_DIRS) -o "$(TARGET_NAME)" $(FORT_OBJS) $(OBJS) $(LIBS)
+#	@echo 'Finished building target: $(TARGET_NAME)'
+#	@echo ' '
+ 
+
+# All Target
+all: lagrange_cpp
+
 # Other Targets
 clean:
-	-$(RM) *.o *.d $(TARGET_NAME)
+	-$(RM) *.o *.d
 	-@echo ' '
