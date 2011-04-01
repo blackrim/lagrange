@@ -49,8 +49,10 @@ if __name__ == "__main__":
 	mainfile.write("splits\n")
 	mainfile.write("ancstate = _all_\n")
 	mainfile.write("periods = ")
+	curtime = 0
 	for i in d['dispersal_durations']:
-		mainfile.write(str(i))
+		mainfile.write(str(float(i)+curtime))
+		curtime += float(i)
 		if i != d['dispersal_durations'][-1]:
 			mainfile.write(" ")
 	mainfile.write("\n")
