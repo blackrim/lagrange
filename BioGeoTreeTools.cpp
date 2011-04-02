@@ -137,13 +137,14 @@ void BioGeoTreeTools::summarizeSplits(Node * node,map<vector<int>,vector<AncSpli
 
 void BioGeoTreeTools::summarizeAncState(Node * node,vector<Superdouble> & ans,map<int,string> &areanamemaprev, RateModel * rm){
 	Superdouble best(ans[1]);
+	//Superdouble best(0);
 	Superdouble sum(0);
 	map<Superdouble,string > printstring;
 	int areasize = rm->get_num_areas();
 	map<int, vector<int> > * distmap = rm->get_int_dists_map(); 
 	vector<int> bestancdist;
 	for(unsigned int i=1;i<ans.size();i++){
-		if (ans[i] > best){
+		if (ans[i] > best && ans[i] != 0){ //added != 0, need to test
 			best = ans[i];
 			bestancdist = (*distmap)[i];
 		}
