@@ -51,10 +51,12 @@ public:
 	Superdouble operator- ( Superdouble x);
 	void operator++ ();
 	void operator -- ();
-	void operator*= (Superdouble x);
-	void operator/= (Superdouble x);
-	void operator+= (Superdouble x);
-	void operator-= (Superdouble x);
+	void operator*= (const Superdouble &x);
+	void operator/= (const Superdouble &x);
+	void operator+= (const Superdouble &x);
+	void operator-= (const Superdouble &x);
+	bool operator != (const Superdouble &x)const ;
+	bool operator == (const Superdouble &x)const ;
 	bool operator < (const Superdouble &x)const ;
 	bool operator > (const Superdouble &x)const ;
 	bool operator >= (const Superdouble &x)const ;

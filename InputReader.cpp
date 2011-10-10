@@ -87,17 +87,29 @@ void InputReader::checkData(map<string,vector<int> > data ,vector<Tree *> trees)
     for(itr = data.begin(); itr != data.end(); ++itr){
 	dataspecies.push_back(itr->first);
     }
-    //for(unsigned int i=0;i < trees.size();i++){
+    vector<string> treespecies;
     for(int j=0;j<trees[0]->getExternalNodeCount();j++){
-	bool test = false;
+	treespecies.push_back(trees[0]->getExternalNode(j)->getName());
+	int count = 0;
 	for (unsigned int k=0;k<dataspecies.size();k++){
 	    if (trees[0]->getExternalNode(j)->getName() == dataspecies[k])
-		test = true;
+		count += 1;
 	}
-	if(test == false){
-	    cout << "Error: " << trees[0]->getExternalNode(j)->getName() << " not found in data file." << endl;
+	if(count != 1){
+	    cout << "Error: " << trees[0]->getExternalNode(j)->getName() << " found"<<count<<" times in data file." << endl;
 	    exit(0);
 	}
     }
-    //}
+    for (int j=0;j<dataspecies.size();j++){
+	int count = 0;
+	for (int k=0;k<treespecies.size();k++){
+	    if (dataspecies[j] == treespecies[k]){
+	        count += 1;
+	    }
+	}
+	if (count != 1){
+	    cerr << "Error: "<<dataspecies[j]<<" found "<<count<<" times in tree file."<<endl;
+	    exit(0);
+	}
+    }
 }

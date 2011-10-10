@@ -129,20 +129,20 @@ void Superdouble::operator -- (){
 }
 
 //add stilldouble
-void Superdouble::operator *= (Superdouble x){
+void Superdouble::operator *= (const Superdouble &x){
 	mantissa*=x.mantissa;
 	exponent+=x.exponent;
 	adjustDecimal();
 }
 
 //add stilldouble
-void Superdouble::operator /= (Superdouble x){
+void Superdouble::operator /= (const Superdouble &x){
 	mantissa/=x.mantissa;
 	exponent-=x.exponent;
 	adjustDecimal();
 }
 
-void Superdouble::operator += ( Superdouble  x){
+void Superdouble::operator += (const Superdouble  &x){
 	//only tricky thing is converting them to same exponent
 	if (mantissa!=0) {
 		if (stilldouble == true && x.stilldouble == true){
@@ -168,7 +168,7 @@ void Superdouble::operator += ( Superdouble  x){
 }
 
 //add stilldouble
-void Superdouble::operator -= ( Superdouble  x){
+void Superdouble::operator -= (const Superdouble  &x){
 	//only tricky thing is converting them to same exponent
 	if (mantissa!=0) {
 		int exponentdif=x.exponent-exponent;
@@ -215,6 +215,26 @@ bool Superdouble::operator <= (const Superdouble & x)const{
 	else if(exponent == x.exponent && mantissa <= x.mantissa)
 		return true;
 	else
+		return false;
+}
+
+bool Superdouble::operator == (const Superdouble & x)const{
+	if (exponent == x.exponent)
+	    if (mantissa == x.mantissa)
+		return true;
+	    else
+		return false;
+	else
+		return false;
+}
+
+bool Superdouble::operator != (const Superdouble & x)const{
+	if (exponent != x.exponent)
+	    return true;
+	else
+	    if (mantissa != x.mantissa)
+		return true;
+	    else
 		return false;
 }
 
