@@ -72,7 +72,7 @@ CPP_DEPS += \
 TARGET_NAME = lagrange_cpp
 #for cleaning use -Weffc++
 #for openmp -fopenmp
-C_OPT = -O3 -ftree-vectorize -ffast-math -g3
+C_OPT = -O3 -ftree-vectorize -ffast-math -g3 -fopenmp
 #C_OPT = -Wall -g
 
 

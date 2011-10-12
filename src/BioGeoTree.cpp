@@ -328,15 +328,18 @@ void BioGeoTree::ancdist_conditional_lh(Node & node, bool marginal){
 			}
 			columns->at(0) = 0;
 		}
+
 		v1 =conditionals(*c1,marginal,sparse);
 		v2 =conditionals(*c2,marginal,sparse);
 
 		vector<vector<int> > * dists = rootratemodel->getDists();
 		vector<int> leftdists;
-		vector<int> rightdists;
+		vector<int> rightdists;		
 		double weight;
 		//cl1 = clock();
+		
 		for (unsigned int i=0;i<dists->size();i++){
+
 			if(accumulate(dists->at(i).begin(),dists->at(i).end(),0) > 0){
 				Superdouble lh = 0.0;
 				vector<vector<int> >* exdist = node.getExclDistVector();
