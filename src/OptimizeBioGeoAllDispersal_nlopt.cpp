@@ -73,19 +73,19 @@ vector<double> optimize_dispersal_extinction_all_nlopt(BioGeoTree * init_tree,Ra
 
 	for(int i=0;i<numparams;i++){
 		init_x[i] = 0.01;
-		low[i] = 0.0000001;
+		low[i] = 1e-7;
 		up[i] = HUGE_VAL;
 	}
 
-	int rc, maxnfeval = 5000;
+	int rc, maxnfeval = 20000;
 
 	nlopt_opt opt = nlopt_create(NLOPT_LN_SBPLX, numparams);
 	nlopt_set_lower_bounds(opt, low);
 	nlopt_set_min_objective(opt, get_likelihood_with_optimized_dispersal_extinction, NULL);
-	//nlopt_set_xtol_rel(opt, 1e-2);
-	nlopt_set_ftol_abs(opt, 1e-1);
-	nlopt_optimize(opt, init_x, &f);
-
+	nlopt_set_xtol_rel(opt, 1e-7);
+	//nlopt_set_ftol_abs(opt, 1e-1);
+	nlopt_result res = nlopt_optimize(opt, init_x, &f);
+	cout << "result ouput status: " << res << endl;
 	vector<double> results;
 	for(int i=0;i<numparams;i++){
 		results.push_back(init_x[i]);
