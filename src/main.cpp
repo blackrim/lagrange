@@ -75,6 +75,10 @@ int main(int argc, char* argv[]){
 	bool bayesian = false;
 	int numreps = 10000;
 
+	double dispersal = 0.1;
+	double extinction = 0.1;
+	bool estimate = true;
+
 	/*
 	 * for stochastic mapping
 	 */
@@ -278,6 +282,14 @@ int main(int argc, char* argv[]){
 			if(tokens.size() > 1){
 			    numreps = atoi(tokens[1].c_str());
 			}
+		    }else if(!strcmp(tokens[0].c_str(), "dispersal")){
+			dispersal = atof(tokens[1].c_str());
+			cout << "setting dispersal: " << dispersal << endl;
+			estimate = false;
+		    }else if(!strcmp(tokens[0].c_str(), "extinction")){
+			extinction = atof(tokens[1].c_str());
+			cout << "setting extinction: " << extinction << endl;
+			estimate = false;
 		    }
 		}
 	    }
@@ -458,63 +470,73 @@ int main(int argc, char* argv[]){
 	     * optimize likelihood
 	     */
 	    Superdouble nlnlike = 0;
-	    if(estimate_dispersal_mask == false){
-		cout << "Optimizing (simplex) -ln likelihood." << endl;
-		OptimizeBioGeo opt(&bgt,&rm,marginal);
-		vector<double> disext  = opt.optimize_global_dispersal_extinction();
-		cout << "dis: " << disext[0] << " ext: " << disext[1] << endl;
-		rm.setup_D(disext[0]);
-		rm.setup_E(disext[1]);
+	    if (estimate == true){
+		if(estimate_dispersal_mask == false){
+		    cout << "Optimizing (simplex) -ln likelihood." << endl;
+		    OptimizeBioGeo opt(&bgt,&rm,marginal);
+		    vector<double> disext  = opt.optimize_global_dispersal_extinction();
+		    cout << "dis: " << disext[0] << " ext: " << disext[1] << endl;
+		    rm.setup_D(disext[0]);
+		    rm.setup_E(disext[1]);
+		    rm.setup_Q();
+		    bgt.update_default_model(&rm);
+		    bgt.set_store_p_matrices(true);
+		    cout << "final -ln likelihood: "<< double(bgt.eval_likelihood(marginal)) <<endl;
+		    bgt.set_store_p_matrices(false);
+		}else{//optimize all the dispersal matrix
+		    cout << "Optimizing (simplex) -ln likelihood with all dispersal parameters free." << endl;
+		    //OptimizeBioGeoAllDispersal opt(&bgt,&rm,marginal);
+		    //vector<double> disextrm  = opt.optimize_global_dispersal_extinction();
+		    vector<double> disextrm = optimize_dispersal_extinction_all_nlopt(&bgt,&rm);
+		    cout << "dis: " << disextrm[0] << " ext: " << disextrm[1] << endl;
+		    vector<double> cols(rm.get_num_areas(), 0);
+		    vector< vector<double> > rows(rm.get_num_areas(), cols);
+		    vector< vector< vector<double> > > D_mask = vector< vector< vector<double> > > (periods.size(), rows);
+		    int count = 2;
+		    for (unsigned int i=0;i<D_mask.size();i++){
+			for (unsigned int j=0;j<D_mask[i].size();j++){
+			    D_mask[i][j][j] = 0.0;
+			    for (unsigned int k=0;k<D_mask[i][j].size();k++){
+				if(k!= j){
+				    D_mask[i][j][k] = disextrm[count];
+				    count += 1;
+				}
+			    }
+			}
+		    }
+		    cout << "D_mask" <<endl;
+		    for (unsigned int i=0;i<D_mask.size();i++){
+			cout << periods.at(i) << endl;
+			cout << "\t";
+			for(unsigned int j=0;j<D_mask[i].size();j++){
+			    cout << areanames[j] << "\t" ;
+			}
+			cout << endl;
+			for (unsigned int j=0;j<D_mask[i].size();j++){
+			    cout << areanames[j] << "\t" ;
+			    for (unsigned int k=0;k<D_mask[i][j].size();k++){
+				cout << D_mask[i][j][k] << "\t";
+			    }
+			    cout << endl;
+			}
+			cout << endl;
+		    }
+		    rm.setup_D_provided(disextrm[0],D_mask);
+		    rm.setup_E(disextrm[1]);
+		    rm.setup_Q();
+		    bgt.update_default_model(&rm);
+		    bgt.set_store_p_matrices(true);
+		    nlnlike = bgt.eval_likelihood(marginal);
+		    cout << "final -ln likelihood: "<< double(nlnlike) <<endl;
+		    bgt.set_store_p_matrices(false);
+		}
+	    }else{
+		rm.setup_D(dispersal);
+		rm.setup_E(extinction);
 		rm.setup_Q();
 		bgt.update_default_model(&rm);
 		bgt.set_store_p_matrices(true);
 		cout << "final -ln likelihood: "<< double(bgt.eval_likelihood(marginal)) <<endl;
-		bgt.set_store_p_matrices(false);
-	    }else{//optimize all the dispersal matrix
-		cout << "Optimizing (simplex) -ln likelihood with all dispersal parameters free." << endl;
-		//OptimizeBioGeoAllDispersal opt(&bgt,&rm,marginal);
-		//vector<double> disextrm  = opt.optimize_global_dispersal_extinction();
-		vector<double> disextrm = optimize_dispersal_extinction_all_nlopt(&bgt,&rm);
-		cout << "dis: " << disextrm[0] << " ext: " << disextrm[1] << endl;
-		vector<double> cols(rm.get_num_areas(), 0);
-		vector< vector<double> > rows(rm.get_num_areas(), cols);
-		vector< vector< vector<double> > > D_mask = vector< vector< vector<double> > > (periods.size(), rows);
-		int count = 2;
-		for (unsigned int i=0;i<D_mask.size();i++){
-		    for (unsigned int j=0;j<D_mask[i].size();j++){
-			D_mask[i][j][j] = 0.0;
-			for (unsigned int k=0;k<D_mask[i][j].size();k++){
-			    if(k!= j){
-				D_mask[i][j][k] = disextrm[count];
-				count += 1;
-			    }
-			}
-		    }
-		}
-		cout << "D_mask" <<endl;
-		for (unsigned int i=0;i<D_mask.size();i++){
-		    cout << periods.at(i) << endl;
-		    cout << "\t";
-		    for(unsigned int j=0;j<D_mask[i].size();j++){
-			cout << areanames[j] << "\t" ;
-		    }
-		    cout << endl;
-		    for (unsigned int j=0;j<D_mask[i].size();j++){
-			cout << areanames[j] << "\t" ;
-			for (unsigned int k=0;k<D_mask[i][j].size();k++){
-			    cout << D_mask[i][j][k] << "\t";
-			}
-			cout << endl;
-		    }
-		    cout << endl;
-		}
-		rm.setup_D_provided(disextrm[0],D_mask);
-		rm.setup_E(disextrm[1]);
-		rm.setup_Q();
-		bgt.update_default_model(&rm);
-		bgt.set_store_p_matrices(true);
-		nlnlike = bgt.eval_likelihood(marginal);
-		cout << "final -ln likelihood: "<< double(nlnlike) <<endl;
 		bgt.set_store_p_matrices(false);
 	    }
 
