@@ -81,7 +81,7 @@ C_OPT = -O3 -ftree-vectorize -ffast-math -g3
 #INCLUDES = -I/usr/include/octave-3.2.4/
 
 #requires fortran, bio++ libraries, gsl, and pthread
-LIBS := -lgfortran -lgsl -lgslcblas -lm -lpthread -framework Accelerate -lnlopt
+LIBS := -lgfortran -lgsl -lgslcblas -lm -lpthread -larmadillo -lnlopt
 
 
 
@@ -110,7 +110,7 @@ FORT_OBJS += \
 	$(CC) $(DEBUG) $(INCLUDES) $(C_OPT) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 
 #link library locations
-LINK_LIB_DIRS = -L/usr/local/lib/ -L/usr/lib/ -L./gmpfrxx/
+LINK_LIB_DIRS = -L/usr/local/lib/ -L/usr/lib/ -L/usr/local/lib/gcc/9/ 
 
 # Tool invocations
 lagrange_cpp: $(OBJS) $(FORT_OBJS)

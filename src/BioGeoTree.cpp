@@ -28,7 +28,7 @@ using namespace arma;
 #include "node.h"
 #include "vector_node_object.h"
 
-#include "omp.h"
+//#include "omp.h"
 //octave usage
 //#include <octave/oct.h>
 
@@ -227,12 +227,13 @@ vector<Superdouble> BioGeoTree::conditionals(Node & node, bool marginal,bool spa
 		  testing pthread version
 		*/
 		if(rm->get_nthreads() > 0){
-		    vector<vector<double > > p = rm->setup_pthread_sparse_P(tsegs->at(i).getPeriod(),tsegs->at(i).getDuration(),*whichcolumns);
+		    /*commented so this can compile in MAC
+             * vector<vector<double > > p = rm->setup_pthread_sparse_P(tsegs->at(i).getPeriod(),tsegs->at(i).getDuration(),*whichcolumns);
 		    for(unsigned int j=0;j<distrange.size();j++){
 			for(unsigned int k=0;k<distconds.size();k++){
 			    v->at(distrange[j]) += (distconds.at(k)*p[distrange[j]][k]);
 			}
-		    }
+		    }*/
 		}else{
 		    for(unsigned int j=0;j<distrange.size();j++){
 			bool inthere = false;

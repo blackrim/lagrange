@@ -557,7 +557,7 @@ vector<double >  RateModel::setup_sparse_single_column_P(int period, double t, i
 	for returning all columns for pthread fortran sparse matrix calculation
 
 	NOT GOING TO BE FASTER UNTIL THE FORTRAN CODE GOES TO C
- */
+ *
 vector<vector<double > > RateModel::setup_pthread_sparse_P(int period, double t, vector<int> & columns){
 	struct sparse_thread_data thread_data_array[numthreads];
 	for(int i=0;i<numthreads;i++){
@@ -604,9 +604,9 @@ vector<vector<double > > RateModel::setup_pthread_sparse_P(int period, double t,
 		}
 //		printf("Completed join with thread %d status= %ld\n",i, (long)status);
 	}
-	/*
-		bring em back and combine for keep_seqs and keep_rc
-	 */
+	
+	//	bring em back and combine for keep_seqs and keep_rc
+	 
 	vector<vector<double> > preturn (Q[period].size(), vector<double>(Q[period].size()));
 	for (int i=0;i<numthreads; i++){
 		for(unsigned int j=0;j<thread_data_array[i].columns.size();j++){
@@ -619,7 +619,7 @@ vector<vector<double > > RateModel::setup_pthread_sparse_P(int period, double t,
 		}
 	}
 	return preturn;
-}
+}*/
 
 
 vector<vector<vector<int> > > RateModel::iter_dist_splits(vector<int> & dist){
