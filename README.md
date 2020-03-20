@@ -5,4 +5,5 @@ this changed from a configure/Makefile project to cmake
 to build run
 
 `cmake .`
+
 `make`
