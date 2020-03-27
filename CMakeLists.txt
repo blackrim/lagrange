@@ -3,6 +3,8 @@ project(lagrange_cpp)
 
 set(CMAKE_CXX_STANDARD 14)
 
+link_directories(/usr/local/lib)
+include_directories(/usr/local/include)
 include_directories(src)
 
 enable_language(Fortran)
@@ -56,7 +58,5 @@ add_executable(lagrange_cpp
         src/mataid.f
         src/my_expokit.f
         src/my_matexp.f)
-
-
 
 target_link_libraries(lagrange_cpp gsl armadillo nlopt)

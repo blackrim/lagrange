@@ -744,8 +744,10 @@ bool RateModel::get_eigenvec_eigenval_from_Q(cx_mat * eigval, cx_mat * eigvec, i
 				isImag = true;
 		}
 	}
-	//cout << eigva << endl;
-	//cout << tQ - ((*eigvec) * (*eigval) * inv(*eigvec)) <<endl;
+	if (VERBOSE) {
+        cout << eigva << endl;
+        cout << tQ - ((*eigvec) * (*eigval) * inv(*eigvec)) << endl;
+    }
 	return isImag;
 }
 
