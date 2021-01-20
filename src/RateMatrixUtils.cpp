@@ -318,6 +318,7 @@ vector<int> get_columns_for_sparse(vector<Superdouble> & inc, RateModel * rm){
 /*
 	this is for parallel sparse matrix calculation
  */
+/*
 void * sparse_column_pmatrix_pthread_go(void *threadarg){
 	struct sparse_thread_data *my_data;
 	my_data = (struct sparse_thread_data *) threadarg;
@@ -332,15 +333,15 @@ void * sparse_column_pmatrix_pthread_go(void *threadarg){
 	thread_id = my_data->thread_id;
 	period = my_data->period;
 	t = my_data->t;
-	/*
-		get each column
-	 */
+	
+	//get each column
+	
     for(unsigned int i=0;i<columns.size();i++){
 		presults.push_back(rm->setup_sparse_single_column_P(period, t, columns[i]));
 	}
 	my_data->presults = presults;
 	return 0;
-}
+}*/
 
 //REQUIRES BOOST AND IS SLOWER BUT TO ACTIVATE UNCOMMENT
 

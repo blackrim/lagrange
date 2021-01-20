@@ -558,7 +558,6 @@ int main(int argc, char *argv[]) {
                 BayesianBioGeoAllDispersal bayes(&bgt, &rm, marginal, numreps);
                 bayes.run_global_dispersal_extinction();
             }
-
             /*
              * ancestral splits calculation
              */

@@ -27,10 +27,6 @@ using namespace std;
 #include <armadillo>
 using namespace arma;
 
-//octave usage
-//#include <octave/oct.h>
-
-
 RateModel::RateModel(int na, bool ge, vector<double> pers, bool sp):
 	globalext(ge),nareas(na),numthreads(0),periods(pers),sparse(sp){}
 
@@ -319,308 +315,26 @@ void RateModel::setup_Q(){
 	}
 }
 
-
-
-extern"C" {
-	void wrapalldmexpv_(int * n,int* m,double * t,double* v,double * w,double* tol,
-		double* anorm,double* wsp,int * lwsp,int* iwsp,int *liwsp, int * itrace,int *iflag,
-		int *ia, int *ja, double *a, int *nz, double * res);
-	void wrapsingledmexpv_(int * n,int* m,double * t,double* v,double * w,double* tol,
-			double* anorm,double* wsp,int * lwsp,int* iwsp,int *liwsp, int * itrace,int *iflag,
-			int *ia, int *ja, double *a, int *nz, double * res);
-	void wrapdgpadm_(int * ideg,int * m,double * t,double * H,int * ldh,
-			double * wsp,int * lwsp,int * ipiv,int * iexph,int *ns,int *iflag );
-}
-
-/*
- * runs the basic padm fortran expokit full matrix exp
- */
-vector<vector<double > > RateModel::setup_fortran_P(int period, double t, bool store_p_matrices){
-	/*
-	return P, the matrix of dist-to-dist transition probabilities,
-	from the model's rate matrix (Q) over a time duration (t)
-	*/
-	int ideg = 6;
+vector<vector<double > > RateModel::setup_arma_P(int period, double t, bool store_p_matrices){
 	int m = Q[period].size();
-	int ldh = m;
-	double tol = 1;
-	int iflag = 0;
-	int lwsp = 4*m*m+6+1;
-	double * wsp = new double[lwsp];
-	int * ipiv = new int[m];
-	int iexph = 0;
-	int ns = 0;
-	double * H = new double [m*m];
-	convert_matrix_to_single_row_for_fortran(Q[period],t,H);
-	wrapdgpadm_(&ideg,&m,&tol,H,&ldh,wsp,&lwsp,ipiv,&iexph,&ns,&iflag);
+	mat A(m, m);
+	for(int i=0;i<m;i++){
+		for(int j=0;j<m;j++){
+			A.at(i,j) = Q[period][i][j];
+		}
+	}
+	mat B = expmat(A);
 	vector<vector<double> > p (Q[period].size(), vector<double>(Q[period].size()));
 	for(int i=0;i<m;i++){
 		for(int j=0;j<m;j++){
-			p[i][j] = wsp[iexph+(j-1)*m+(i-1)+m];
+			p[i][j] = B.at(i,j);
 		}
 	}
-	delete [] wsp;
-	delete [] ipiv;
-	delete [] H;
-	for(unsigned int i=0; i<p.size(); i++){
-		double sum = 0.0;
-		for (unsigned int j=0; j<p[i].size(); j++){
-			sum += p[i][j];
-		}
-		for (unsigned int j=0; j<p[i].size(); j++){
-			p[i][j] = (p[i][j]/sum);
-		}
-	}
-
-
-	//filter out impossible dists
-	//vector<vector<int> > dis = enumerate_dists();
-	/*
-	for (unsigned int i=0;i<dists.size();i++){
-		//if (calculate_vector_int_sum(&dists[i]) > 0){
-		if(accumulate(dists[i].begin(),dists[i].end(),0) > 0){
-			for(unsigned int j=0;j<dists[i].size();j++){
-				if(dists[i][j]==1){//present
-					double sum1 =calculate_vector_double_sum(Dmask[period][j]);
-					double sum2 = 0.0;
-					for(unsigned int k=0;k<Dmask[period].size();k++){
-						sum2 += Dmask[period][k][j];
-					}
-					if(sum1+sum2 == 0){
-						for(unsigned int k=0;k<p[period].size();k++){
-							p[period][k] = p[period][k]*0.0;
-						}
-						break;
-					}
-				}
-			}
-		}
-	}*/
-
-	/*
-	 if store_p_matrices we will store them
-	 */
 	if(store_p_matrices == true){
 		stored_p_matrices[period][t] = p;
 	}
-
-	if(VERBOSE){
-		cout << "p " << period << " "<< t << endl;
-		for (unsigned int i=0;i<p.size();i++){
-			for (unsigned int j=0;j<p[i].size();j++){
-				cout << p[i][j] << " ";
-			}
-			cout << endl;
-		}
-	}
 	return p;
 }
-
-/*
- * runs the sparse matrix fortran expokit matrix exp
- */
-vector<vector<double > > RateModel::setup_sparse_full_P(int period, double t){
-	int n = Q[period].size();
-	int m = Q[period].size()-1;//tweak
-	int nz = get_size_for_coo(Q[period],1);
-	int * ia = new int [nz];
-	int * ja = new int [nz];
-	double * a = new double [nz];
-	convert_matrix_to_coo_for_fortran(Q[period],t,ia,ja,a);
-	double * v = new double [n];
-	for(int i=0;i<n;i++){
-		v[i] = 0;
-	}v[0]= 1;
-	double * w = new double [n];
-	int ideg = 6;
-	double tol = 1;
-	int iflag = 0;
-	int lwsp = n*(m+1)+n+pow((m+2.),2)+4*pow((m+2.),2)+ideg+1;
-	double * wsp = new double[lwsp];
-	int liwsp = m+2;
-	int * iwsp = new int [liwsp];
-	double t1 = 1;
-	double anorm = 0;
-	int itrace = 0;
-	double * res = new double [n*n];
-	wrapalldmexpv_(&n,&m,&t1,v,w,&tol,&anorm,wsp,&lwsp,iwsp,&liwsp,
-			&itrace,&iflag,ia,ja,a,&nz,res);
-
-	vector<vector<double> > p (Q[period].size(), vector<double>(Q[period].size()));
-	int count = 0;
-	for(int i=0;i<n;i++){
-		for(int j=0;j<n;j++){
-			p[j][i] = res[count];
-			count += 1;
-		}
-	}
-
-	//filter out impossible dists
-	//vector<vector<int> > dis = enumerate_dists();
-	for (unsigned int i=0;i<dists.size();i++){
-		//if (calculate_vector_int_sum(&dists[i]) > 0){
-		if(accumulate(dists[i].begin(),dists[i].end(),0) > 0){
-			for(unsigned int j=0;j<dists[i].size();j++){
-				if(dists[i][j]==1){//present
-					double sum1 =calculate_vector_double_sum(Dmask[period][j]);
-					double sum2 = 0.0;
-					for(unsigned int k=0;k<Dmask[period].size();k++){
-						sum2 += Dmask[period][k][j];
-					}
-					if(sum1+sum2 == 0){
-						for(unsigned int k=0;k<p[period].size();k++){
-							p[period][k] = p[period][k]*0.0;
-						}
-						break;
-					}
-				}
-			}
-		}
-	}
-	delete []res;
-	delete []iwsp;
-	delete []w;
-	delete []wsp;
-	delete []a;
-	delete []ia;
-	delete []ja;
-	if(VERBOSE){
-		cout << "p " << period << " "<< t << endl;
-		for (unsigned int i=0;i<p.size();i++){
-			for (unsigned int j=0;j<p[i].size();j++){
-				cout << p[i][j] << " ";
-			}
-			cout << endl;
-		}
-	}
-	return p;
-}
-
-/*
- * for returning single P columns
- */
-vector<double >  RateModel::setup_sparse_single_column_P(int period, double t, int column){
-	int n = Q[period].size();
-	int m = nareas-1;
-	int nz = nzs[period];//get_size_for_coo(Q[period],1);
-	int * ia = new int [nz];
-	int * ja = new int [nz];
-	double * a = new double [nz];
-	//convert_matrix_to_coo_for_fortran(QT[period],1,ia,ja,a);
-	std::copy(ia_s[period].begin(), ia_s[period].end(), ia);
-	std::copy(ja_s[period].begin(), ja_s[period].end(), ja);
-	std::copy(a_s[period].begin(), a_s[period].end(), a);
-	double * v = new double [n];
-	for(int i=0;i<n;i++){
-		v[i] = 0;
-	}v[column]= 1; // only return the one column we want
-	double * w = new double [n];
-	int ideg = 6;
-	double tol = 1;
-	int iflag = 0;
-	int lwsp = n*(m+1)+n+pow((m+2.),2)+4*pow((m+2.),2)+ideg+1;
-	double * wsp = new double[lwsp];
-	int liwsp = m+2;
-	int * iwsp = new int [liwsp];
-	double t1 = t;//use to be 1
-	double anorm = 0;
-	int itrace = 0;
-	double * res = new double [n]; // only needs resulting columns
-	wrapsingledmexpv_(&n,&m,&t1,v,w,&tol,&anorm,wsp,&lwsp,iwsp,&liwsp,
-			&itrace,&iflag,ia,ja,a,&nz,res);
-
-	vector<double> p (Q[period].size());
-	int count = 0;
-	for(int i=0;i<n;i++){
-		p[i] = res[count];
-		count += 1;
-	}
-	delete []v;
-	delete []res;
-	delete []iwsp;
-	delete []w;
-	delete []wsp;
-	delete []a;
-	delete []ia;
-	delete []ja;
-	if(VERBOSE){
-		cout << "p " << period << " "<< t << " " << column <<  endl;
-		for (unsigned int i=0;i<p.size();i++){
-			cout << p[i] << " ";
-		}
-		cout << endl;
-	}
-	return p;
-}
-
-/*
-	for returning all columns for pthread fortran sparse matrix calculation
-
-	NOT GOING TO BE FASTER UNTIL THE FORTRAN CODE GOES TO C
- *
-vector<vector<double > > RateModel::setup_pthread_sparse_P(int period, double t, vector<int> & columns){
-	struct sparse_thread_data thread_data_array[numthreads];
-	for(int i=0;i<numthreads;i++){
-		vector <int> st_cols;
-		if((i+1) < numthreads){
-			for(unsigned int j=(i*(columns.size()/numthreads));j<((columns.size()/numthreads))*(i+1);j++){
-				st_cols.push_back(columns[j]);
-			}
-		}else{//last one
-			for(unsigned int j=(i*(columns.size()/numthreads));j<columns.size();j++){
-				st_cols.push_back(columns[j]);
-			}
-		}
-//		cout << "spliting: " << st_cols.size() << endl;
-		thread_data_array[i].thread_id = i;
-		thread_data_array[i].columns = st_cols;
-		vector<vector<double> > presults;
-		thread_data_array[i].presults = presults;
-		thread_data_array[i].t = t;
-		thread_data_array[i].period = period;
-		thread_data_array[i].rm = this;
-	}
-	pthread_t threads[numthreads];
-	void *status;
-	int rc;
-	pthread_attr_t attr;
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	for(int i=0; i <numthreads; i++){
-//		cout << "thread: " << i <<endl;
-		rc = pthread_create(&threads[i], &attr, sparse_column_pmatrix_pthread_go, (void *) &thread_data_array[i]);
-		if (rc){
-			printf("ERROR; return code from pthread_create() is %d\n", rc);
-			exit(-1);
-		}
-	}
-	pthread_attr_destroy(&attr);
-	for(int i=0;i<numthreads; i++){
-//		cout << "joining: " << i << endl;
-		pthread_join( threads[i], &status);
-		if (rc){
-			printf("ERROR; return code from pthread_join() is %d\n", rc);
-			exit(-1);
-		}
-//		printf("Completed join with thread %d status= %ld\n",i, (long)status);
-	}
-	
-	//	bring em back and combine for keep_seqs and keep_rc
-	 
-	vector<vector<double> > preturn (Q[period].size(), vector<double>(Q[period].size()));
-	for (int i=0;i<numthreads; i++){
-		for(unsigned int j=0;j<thread_data_array[i].columns.size();j++){
-			preturn[thread_data_array[i].columns[j]] = thread_data_array[i].presults[j];
-		}
-	}
-	for(unsigned int i=0;i<Q[period].size();i++){
-		if(count(columns.begin(),columns.end(),i) == 0){
-			preturn[i] = vector<double>(Q[period].size(),0);
-		}
-	}
-	return preturn;
-}*/
-
 
 vector<vector<vector<int> > > RateModel::iter_dist_splits(vector<int> & dist){
 	vector< vector <vector<int> > > ret;

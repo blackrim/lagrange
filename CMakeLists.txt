@@ -7,8 +7,6 @@ link_directories(/usr/local/lib)
 include_directories(/usr/local/include)
 include_directories(src)
 
-enable_language(Fortran)
-
 add_executable(lagrange_cpp
         src/AncSplit.cpp
         src/AncSplit.h
@@ -51,12 +49,6 @@ add_executable(lagrange_cpp
         src/tree_utils.h
         src/Utils.cpp
         src/Utils.h
-        src/vector_node_object.h
-        src/blas.f
-        src/clock.f
-        src/lapack.f
-        src/mataid.f
-        src/my_expokit.f
-        src/my_matexp.f)
+        src/vector_node_object.h)
 
 target_link_libraries(lagrange_cpp gsl armadillo nlopt)

@@ -216,46 +216,15 @@ vector<Superdouble> BioGeoTree::conditionals(Node &node, bool marginal, bool spa
          * marginal
          */
         if (marginal == true) {
-            if (sparse == false) {
-                vector<vector<double> > p;
-                if (use_stored_matrices == false) {
-                    p = rm->setup_fortran_P(tsegs->at(i).getPeriod(), tsegs->at(i).getDuration(), store_p_matrices);
-                } else {
-                    p = rm->stored_p_matrices[tsegs->at(i).getPeriod()][tsegs->at(i).getDuration()];
-                }
-                for (unsigned int j = 0; j < distrange.size(); j++) {
-                    for (unsigned int k = 0; k < distconds.size(); k++) {
-                        v->at(distrange[j]) += (distconds.at(k) * p[distrange[j]][k]);
-                    }
-                }
-            } else {//sparse
-                /*
-                  testing pthread version
-                */
-                if (rm->get_nthreads() > 0) {
-                    /*commented so this can compile in MAC
-                     * vector<vector<double > > p = rm->setup_pthread_sparse_P(tsegs->at(i).getPeriod(),tsegs->at(i).getDuration(),*whichcolumns);
-                    for(unsigned int j=0;j<distrange.size();j++){
-                    for(unsigned int k=0;k<distconds.size();k++){
-                        v->at(distrange[j]) += (distconds.at(k)*p[distrange[j]][k]);
-                    }
-                    }*/
-                } else {
-                    for (unsigned int j = 0; j < distrange.size(); j++) {
-                        bool inthere = false;
-                        if (columns->at(distrange[j]) == 1)
-                            inthere = true;
-                        vector<double> p;
-                        if (inthere == true) {
-                            p = rm->setup_sparse_single_column_P(tsegs->at(i).getPeriod(), tsegs->at(i).getDuration(),
-                                                                 distrange[j]);
-                        } else {
-                            p = vector<double>(distconds.size(), 0);
-                        }
-                        for (unsigned int k = 0; k < distconds.size(); k++) {
-                            v->at(distrange[j]) += (distconds.at(k) * p[k]);
-                        }
-                    }
+            vector<vector<double> > p;
+            if (use_stored_matrices == false) {
+                p = rm->setup_arma_P(tsegs->at(i).getPeriod(), tsegs->at(i).getDuration(), store_p_matrices);
+            } else {
+                p = rm->stored_p_matrices[tsegs->at(i).getPeriod()][tsegs->at(i).getDuration()];
+            }
+            for (unsigned int j = 0; j < distrange.size(); j++) {
+                for (unsigned int k = 0; k < distconds.size(); k++) {
+                    v->at(distrange[j]) += (distconds.at(k) * p[distrange[j]][k]);
                 }
             }
         }
@@ -265,7 +234,7 @@ vector<Superdouble> BioGeoTree::conditionals(Node &node, bool marginal, bool spa
              */
         else {
             if (sparse == false) {
-                vector<vector<double> > p = rm->setup_fortran_P(tsegs->at(i).getPeriod(), tsegs->at(i).getDuration(),
+                vector<vector<double> > p = rm->setup_arma_P(tsegs->at(i).getPeriod(), tsegs->at(i).getDuration(),
                                                                 store_p_matrices);
                 for (unsigned int j = 0; j < distrange.size(); j++) {
                     Superdouble maxnum = 0;
