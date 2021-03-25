@@ -268,39 +268,7 @@ void RateModel::setup_Q(){
 		}
 		set_Qdiag(p);
 	}
-	/*
-	 * sparse needs to be transposed for matrix exponential calculation
-	 */
-	if(sparse == true){
-		vector<double> cols(dists.size(), 0);
-		vector< vector<double> > rows(dists.size(), cols);
-		QT = vector< vector< vector<double> > > (periods.size(), rows);
-		for(unsigned int p=0; p < QT.size(); p++){//periods
-			for(unsigned int i=0;i<dists.size();i++){//dists
-				for(unsigned int j=0;j<dists.size();j++){//dists
-					QT[p][j][i] = Q[p][i][j];
-				}
-			}
-		}
-		//setting up the coo numbs
-		nzs = vector<int>(Q.size(),0);
-		for(unsigned int p=0; p < Q.size(); p++){//periods
-			nzs[p] = get_size_for_coo(Q[p],1);
-		}
-		//setup matrix
-		ia_s.clear();
-		ja_s.clear();
-		a_s.clear();
-		for(unsigned int p=0; p < Q.size(); p++){//periods
-			vector<int> ia = vector<int>(nzs[p]);
-			vector<int> ja = vector<int>(nzs[p]);
-			vector<double> a = vector<double>(nzs[p]);
-			convert_matrix_to_coo_for_fortran_vector(QT[p],ia,ja,a);//need to multiply these all these by t
-			ia_s.push_back(ia);
-			ja_s.push_back(ja);
-			a_s.push_back(a);
-		}
-	}
+
 	if(VERBOSE){
 		cout << "Q" <<endl;
 		for (unsigned int i=0;i<Q.size();i++){
@@ -320,9 +288,10 @@ vector<vector<double > > RateModel::setup_arma_P(int period, double t, bool stor
 	mat A(m, m);
 	for(int i=0;i<m;i++){
 		for(int j=0;j<m;j++){
-			A.at(i,j) = Q[period][i][j];
+			A.at(i,j) = Q[period][i][j]*t;
 		}
 	}
+
 	mat B = expmat(A);
 	vector<vector<double> > p (Q[period].size(), vector<double>(Q[period].size()));
 	for(int i=0;i<m;i++){
@@ -330,6 +299,15 @@ vector<vector<double > > RateModel::setup_arma_P(int period, double t, bool stor
 			p[i][j] = B.at(i,j);
 		}
 	}
+    if(VERBOSE){
+        cout << "P" << t << endl;
+        for (unsigned int i=0;i<p.size();i++){
+            for (unsigned int j=0;j<p[i].size();j++){
+                cout << p[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
 	if(store_p_matrices == true){
 		stored_p_matrices[period][t] = p;
 	}

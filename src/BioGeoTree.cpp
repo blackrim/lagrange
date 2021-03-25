@@ -283,29 +283,6 @@ void BioGeoTree::ancdist_conditional_lh(Node &node, bool marginal) {
         bool sparse = rootratemodel->sparse;
         vector<Superdouble> v1;
         vector<Superdouble> v2;
-        if (sparse == true) {
-            //getcolumns
-            vector<BranchSegment> *c1tsegs = c1->getSegVector();
-            vector<BranchSegment> *c2tsegs = c2->getSegVector();
-            vector<int> lcols = get_columns_for_sparse(*c1tsegs->at(0).distconds, rootratemodel);
-            vector<int> rcols = get_columns_for_sparse(*c2tsegs->at(0).distconds, rootratemodel);
-            whichcolumns->clear();
-            for (unsigned int i = 0; i < lcols.size(); i++) {
-                if (lcols[i] == 1 || rcols[i] == 1) {
-                    columns->at(i) = 1;
-                    if (i != 0 && count(whichcolumns->begin(), whichcolumns->end(), i) == 0)
-                        whichcolumns->push_back(i);
-                } else {
-                    columns->at(i) = 0;
-                }
-            }
-            if (calculate_vector_int_sum(columns) == 0) {
-                for (unsigned int i = 0; i < lcols.size(); i++) {
-                    columns->at(i) = 1;
-                }
-            }
-            columns->at(0) = 0;
-        }
 
         v1 = conditionals(*c1, marginal, sparse);
         v2 = conditionals(*c2, marginal, sparse);

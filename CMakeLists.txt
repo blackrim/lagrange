@@ -21,7 +21,6 @@ add_executable(lagrange_cpp
         src/BranchSegment.cpp
         src/BranchSegment.h
         src/double_node_object.h
-        src/expm.h
         src/InputReader.cpp
         src/InputReader.h
         src/main.cpp
