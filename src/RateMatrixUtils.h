@@ -63,6 +63,8 @@ void iter_ancsplits_just_int(RateModel *rm, vector<int> & dist,vector<int> & lef
  */
 void print_vector_int(vector<int> & in);
 void print_vector_double(vector<double> & in);
+void print_vector_superdouble(vector<Superdouble> & in);
+
 
 /*
   used for generating all the distributions with maximium number of areas involved

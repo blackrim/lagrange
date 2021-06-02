@@ -29,11 +29,17 @@ double Superdouble::getMantissa(){
 
 void Superdouble::adjustDecimal() {
 	stilldouble = false;
+	if (fabs(mantissa) < 1e+100 &&  fabs(mantissa) > 1e-100){
+		return;
+	}
 	if (mantissa==0 || isinf(mantissa) || isnan(mantissa)) {
 		exponent=0;
 		stilldouble = true;
-	}
-	else {
+	}else {
+		int exa = int(round(log10(mantissa) - 0.5));
+		mantissa=mantissa / pow(10,exa);
+		exponent += exa;
+		/*
 		while (fabs(mantissa)>=10) {
 			mantissa*=0.1;
 			exponent+=1;
@@ -41,7 +47,7 @@ void Superdouble::adjustDecimal() {
 		while (fabs(mantissa)<1) {
 			mantissa*=10.0;
 			exponent+=-1;
-		}
+		}*/
 	}
 }
 

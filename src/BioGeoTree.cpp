@@ -249,7 +249,7 @@ vector<Superdouble> BioGeoTree::conditionals(Node &node, bool marginal, bool spa
             }
         }
         for (unsigned int j = 0; j < distconds.size(); j++) {
-            distconds[j] = v->at(j);
+            distconds[j] = v->at(j);            
         }
         if (store_p_matrices == true) {
             tsegs->at(i).seg_sp_alphas = distconds;

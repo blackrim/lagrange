@@ -186,6 +186,13 @@ void print_vector_double(vector<double> & in){
 	}cout << endl;
 }
 
+void print_vector_superdouble(vector<Superdouble> & in){
+	for(unsigned int i=0;i<in.size();i++){
+		cout << in[i].getMantissa() << "x" << in[i].getExponent() << " ";
+	}cout << endl;
+}
+
+
 inline bool IsMoreThanZero (double & i) { return (i!=0); }
 
 int get_size_for_coo(vector<vector<double> > & inmatrix, double t){
